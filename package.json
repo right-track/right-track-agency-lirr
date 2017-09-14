@@ -1,0 +1,17 @@
+{
+  "name": "right-track-agency-lirr",
+  "version": "0.0.1",
+  "description": "Right Track Agency implementation for the Long Island Rail Road (lirr)",
+  "author": "David Waring <dev@davidwaring.net>",
+  "license": "MIT",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "docs": "node node_modules/jsdoc/jsdoc.js -c jsdoc.json --readme README.md"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jsdoc": "^3.5.4",
+    "docdash": "^0.4.0"
+  }
+}

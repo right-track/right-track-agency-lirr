@@ -1,0 +1,11 @@
+{
+  "name": "Long Island Rail Road",
+  "id": "lirr",
+  "db_location": "./database.db",
+  "db_archive_location": "../db_archive/lirr/",
+  "maintainer": {
+    "name": "David Waring",
+    "email": "dev@davidwaring.net",
+    "website": "https://www.davidwaring.net/"
+  }
+}
