@@ -9,7 +9,9 @@
   "scripts": {
     "docs": "node node_modules/jsdoc/jsdoc.js -c jsdoc.json --readme README.md"
   },
-  "dependencies": {},
+  "dependencies": {
+    "deepmerge": "^1.5.1"
+  },
   "devDependencies": {
     "jsdoc": "^3.5.4",
     "docdash": "^0.4.0"

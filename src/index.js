@@ -1,38 +1,73 @@
 'use strict';
 
-const defaultLocation = "../agency.json";
+const path = require("path");
+const merge = require("deepmerge");
+const defaultLocation = "./agency.json";
+
+
+let config = {};
+
 
 
 /**
- * Get the agency configuration properties from the specified
- * location (or the default properties if no location given)
- * @param {string|undefined} location Path to agency config
- * @returns {object} config values
+ * Read the configuration file from the specified path and merge its
+ * properties with the default configuration file.
+ * @param {string} location Path to agency config file (relative paths are relative to module root)
  */
-let config = function(location) {
-
-    // Load the default configuration
-    let config = require(defaultLocation);
-
-    // Load additional config from location
+let read = function(location) {
     if ( location !== undefined ) {
-        config = Object.assign(config, require(location));
+
+        // Relative paths are relative to the project root directory
+        if (location.charAt(0) === ".") {
+            location = path.join(__dirname, "/../", location);
+        }
+        location = path.normalize(location);
+        console.log("--> Reading Agency Config File: " + location);
+
+        // Read new config file
+        let add = require(location);
+
+        // Parse relative paths relative to file location
+        let dirname = path.dirname(location);
+        if (add.db_location !== undefined) {
+            if (add.db_location.charAt(0) === '.') {
+                add.db_location = path.join(dirname, "/", add.db_location);
+            }
+        }
+        if (add.db_archive_location !== undefined) {
+            if (add.db_archive_location.charAt(0) === '.') {
+                add.db_archive_location = path.join(dirname, "/", add.db_archive_location);
+            }
+        }
+
+        // Merge configs
+        config = merge(config, add, {
+            arrayMerge: function (d, s) {
+                return d.concat(s);
+            }
+        });
+
     }
-    else {
-        location = defaultLocation
-    }
-
-    // Add config location
-    config.path = location;
-
-    // Return the config
-    return config;
-
 };
+
+
+/**
+ * Get the agency configuration variables
+ * @returns {object} Agency config variables
+ */
+let get = function() {
+    return config;
+};
+
+
+
+// Load default properties
+read(defaultLocation);
 
 
 
 // Export functions
 module.exports = {
-    config: config
+    read: read,
+    get: get
 };
