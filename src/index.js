@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require("fs");
 const path = require("path");
 const merge = require("deepmerge");
 const defaultLocation = "./agency.json";
@@ -25,7 +26,7 @@ let read = function(location) {
         console.log("--> Reading Agency Config File: " + location);
 
         // Read new config file
-        let add = require(location);
+        let add = JSON.parse(fs.readFileSync(location, 'utf8'));
 
         // Parse relative paths relative to file location
         let dirname = path.dirname(location);
@@ -37,6 +38,11 @@ let read = function(location) {
         if (add.db_archive_location !== undefined) {
             if (add.db_archive_location.charAt(0) === '.') {
                 add.db_archive_location = path.join(dirname, "/", add.db_archive_location);
+            }
+        }
+        if ( add.icon_location !== undefined ) {
+            if ( add.icon_location.charAt(0) === '.' ) {
+                add.icon_location = path.join(dirname, "/", add.icon_location);
             }
         }
 
@@ -61,13 +67,26 @@ let get = function() {
 
 
 
+/**
+ * Clear any saved config information and 
+ * reload the default configuration.  Any 
+ * previously added config files will have 
+ * to be read again.
+ */
+let reset = function() {
+    config = {};
+    read(defaultLocation);
+}
+
+
 // Load default properties
-read(defaultLocation);
+reset();
 
 
 
 // Export functions
 module.exports = {
     read: read,
-    get: get
+    get: get,
+    reset: reset
 };
