@@ -11,6 +11,8 @@ agency to be used in various projects in the _Right Track Library_.
 
 ### Configuration
 
+Configuration functions are located in `agency.config`. 
+
 #### Default Configuration
 
 When the module is loaded via `require()`, the default configuration file (`agency.json` 
@@ -44,7 +46,7 @@ A relative path passed as the location of the new config file will be loaded
 relative to the module's root directory.
 
 ```javascript
-agency.read("/path/to/config.json");               // override config variables
+agency.config.read("/path/to/config.json");               // override config variables
 ```
 
 
@@ -54,7 +56,7 @@ Use the `get()` function to get the agency's configuration variables (including
 any merged in from an additional file via `read()`).
 
 ```javascript
-let config = agency.get();
+let config = agency.config.get();
 ```
 
 where `config` is an Object containing the agency's configuration.

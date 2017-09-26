@@ -1,92 +1,19 @@
 'use strict';
 
-const fs = require("fs");
-const path = require("path");
-const merge = require("deepmerge");
-const defaultLocation = "./agency.json";
 
-
-let config = {};
-
-
-
-/**
- * Read the configuration file from the specified path and merge its
- * properties with the default configuration file.
- * @param {string} location Path to agency config file (relative paths are relative to module root)
- */
-let read = function(location) {
-    if ( location !== undefined ) {
-
-        // Relative paths are relative to the project root directory
-        if (location.charAt(0) === ".") {
-            location = path.join(__dirname, "/../", location);
-        }
-        location = path.normalize(location);
-        console.log("--> Reading Agency Config File: " + location);
-
-        // Read new config file
-        let add = JSON.parse(fs.readFileSync(location, 'utf8'));
-
-        // Parse relative paths relative to file location
-        let dirname = path.dirname(location);
-        if (add.db_location !== undefined) {
-            if (add.db_location.charAt(0) === '.') {
-                add.db_location = path.join(dirname, "/", add.db_location);
-            }
-        }
-        if (add.db_archive_location !== undefined) {
-            if (add.db_archive_location.charAt(0) === '.') {
-                add.db_archive_location = path.join(dirname, "/", add.db_archive_location);
-            }
-        }
-        if ( add.icon_location !== undefined ) {
-            if ( add.icon_location.charAt(0) === '.' ) {
-                add.icon_location = path.join(dirname, "/", add.icon_location);
-            }
-        }
-
-        // Merge configs
-        config = merge(config, add, {
-            arrayMerge: function (d, s) {
-                return d.concat(s);
-            }
-        });
-
-    }
-};
-
-
-/**
- * Get the agency configuration variables
- * @returns {object} Agency config variables
- */
-let get = function() {
-    return config;
-};
-
-
-
-/**
- * Clear any saved config information and 
- * reload the default configuration.  Any 
- * previously added config files will have 
- * to be read again.
- */
-let reset = function() {
-    config = {};
-    read(defaultLocation);
-}
+const config = require("./config.js");
 
 
 // Load default properties
-reset();
+config.reset();
 
 
 
 // Export functions
 module.exports = {
-    read: read,
-    get: get,
-    reset: reset
+    config: {
+        read: config.read,
+        get: config.get,
+        reset: config.reset
+    }
 };
