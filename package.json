@@ -1,16 +1,29 @@
 {
   "name": "right-track-agency-lirr",
   "version": "0.0.1",
-  "description": "Right Track Agency implementation for the Long Island Rail Road (lirr)",
-  "author": "David Waring <dev@davidwaring.net>",
+  "description": "Right Track Agency: Long Island Rail Road (lirr)",
+  "author": "David Waring <dev@davidwaring.net> (https://davidwaring.net)",
   "license": "MIT",
-  "private": true,
   "main": "src/index.js",
   "scripts": {
     "docs": "jsdoc -c jsdoc.json --readme README.md --template $NODE_PATH/docdash"
   },
   "dependencies": {
-    "deepmerge": "^1.5.1"
+    "deepmerge": "^1.5.1",
+    "right-track-agency-abstract": "^1.0.0",
+    "right-track-core": "^0.9.0",
+    "right-track-db-abstract": "^1.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jsdoc": "^3.5.5"
+  },
+  "homepage": "https://righttrack.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/right-track/right-track-agency-lirr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/right-track/right-track-agency-lirr/issues",
+    "email": "dev@davidwaring.net"
+  }
 }
