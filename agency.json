@@ -1,12 +1,25 @@
 {
   "name": "Long Island Rail Road",
   "id": "lirr",
-  "db_location": "./database.db",
-  "db_archive_location": "../db_archive/lirr/",
-  "icon_location": "./static/img/icon.png",
   "maintainer": {
     "name": "David Waring",
     "email": "dev@davidwaring.net",
     "website": "https://www.davidwaring.net/"
+  },
+  "db": {
+    "location": "./static/db/latest/database.db",
+    "archiveDir": "./static/db/archive/"
+  },
+  "stationFeed": {
+    "stationURL": "",
+    "gtfs-rt": {
+      "url": "",
+      "apiKey": ""
+    }
+  },
+  "static": {
+    "img": {
+      "icon": "./static/img/icon.png"
+    }
   }
 }
