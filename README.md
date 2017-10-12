@@ -6,8 +6,8 @@ Long Island Rail Road
 ---
 
 
-This module is an implementation of a _right-track-agency_ used to 
-extend the functionality of the **right-track-core** module.
+This module is an implementation of a [right-track-agency](https://github.com/right-track/right-track-agency-abstract) 
+used to add agency-specific configuration and functionality to various [Right Track Projects](https://github.com/right-track).
 
 ### Features
 
