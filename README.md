@@ -1,13 +1,21 @@
 Long Island Rail Road
 ==========================
 
+#### node module: [right-track-agency-lirr](https://www.npmjs.com/package/right-track-agency-lirr)
+
+---
+
+
 This module is an implementation of a _right-track-agency_ used to 
 extend the functionality of the **right-track-core** module.
 
 ### Features
 
-Currently, this module provides the configuration variables for this 
-agency to be used in various projects in the _Right Track Library_.
+This module provides the following agency-specific information:
+
+* The latest compiled Right Track Database for MNR
+* The archived Right Track Databases for MNR
+* Agency configuration properties to be used in various _Right Track_ projects
 
 ### Configuration
 
@@ -32,7 +40,9 @@ be loaded relative to the directory this configuration file is located in.
 
 ```json
 {
-    "db_location": "/path/to/database.db"
+    "db": {
+        "location": "/path/to/database.db"    
+    }
 }
 ```
 
@@ -63,14 +73,21 @@ where `config` is an Object containing the agency's configuration.
 
 ```
 { 
-    name: 'Long Island Rail Road',
-    id: 'lirr',
-    db_location: '/right-track/db/db_latest/lirr/database.db',
-    db_archive_location: '/right-track/db/db_archive/lirr/',
-    maintainer: { 
-        name: 'David Waring',
-        email: 'dev@davidwaring.net',
-        website: 'https://www.davidwaring.net/' 
-    } 
+  name: 'Long Island Rail Road',
+  id: 'lirr'
+  maintainer:{
+    name:'David Waring',
+    email:'dev@davidwaring.net',
+    website:'https://www.davidwaring.net/'
+  },
+  db:{
+    location:'/right-track/src/agency-lirr/static/db/latest/database.db',
+    archiveDir:'/right-track/src/agency-lirr/static/db/archive/'
+  },
+  static:{
+    img:{
+      icon:'/right-track/src/agency-lirr/static/img/icon.png'
+    }
+  }
 }
 ```

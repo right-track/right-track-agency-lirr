@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans|Roboto);
 
 * {
   box-sizing: border-box
@@ -11,17 +11,17 @@ html, body {
 
 body {
   color: #4d4e53;
-  background-color: white;
+  background-color: #fff;
   margin: 0 auto;
   padding: 0 20px;
-  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-family: Roboto, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 160%;
 }
 
 a,
 a:active {
-  color: #606;
+  color: #15206f;
   text-decoration: none;
 }
 
@@ -42,13 +42,11 @@ p, ul, ol, blockquote {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Montserrat', sans-serif;
-}
-
-h1, h2, h3, h4, h5, h6 {
+  font-family: 'Open Sans', sans-serif;
   color: #000;
   font-weight: 400;
   margin: 0;
+  line-height: normal;
 }
 
 h1 {
@@ -63,8 +61,19 @@ h1.page-title {
 }
 
 h2 {
-  font-size: 24px;
-  margin: 1.5em 0 .3em;
+  font-size: 36px;
+  margin: 0 0 .3em;
+}
+
+header > h2 {
+  display: none;
+}
+
+.container-overview > h2, h3.subsection-title {
+  font-size: 36px;
+  margin-top: 50px;
+  margin-bottom: 5px;
+  border-bottom: 2px solid #0d152a;
 }
 
 h3 {
@@ -74,27 +83,26 @@ h3 {
 
 h4 {
   font-size: 18px;
+  font-weight: 600;
   margin: 1em 0 .2em;
-  color: #4d4e53;
+  color: #0d152a;
 }
 
 h4.name {
-  color: #fff;
-  background: #6d426d;
-  box-shadow: 0 .25em .5em #d3d3d3;
-  border-top: 1px solid #d3d3d3;
-  border-bottom: 1px solid #d3d3d3;
-  margin: 1.5em 0 0.5em;
+  color: #b84f0c;
+  background-color: #dadfe4;
+  border-top: 2px solid #0d152a;
+  margin-top: 50px;
   padding: .75em 0 .75em 10px;
 }
 
-h4.name a {
+/*h4.name a {
   color: #fc83ff;
 }
 
 h4.name a:hover {
   border-bottom-color: #fc83ff;
-}
+}*/
 
 h5, .container-overview .subsection-title {
   font-size: 120%;
@@ -116,10 +124,12 @@ tt, code, kbd, samp {
 }
 
 .class-description {
-  font-size: 130%;
-  line-height: 140%;
-  margin-bottom: 1em;
-  margin-top: 1em;
+  font-size: 120%;
+  line-height: 120%;
+  padding: 1em;
+  background-color: #ececec;
+  border: 1px solid #98999a;
+  border-radius: 5px;
 }
 
 .class-description:empty {
@@ -138,7 +148,6 @@ header {
 
 section {
   display: block;
-  background-color: #fff;
   padding: 0 0 0 30px;
 }
 
@@ -148,24 +157,30 @@ section {
 
 .signature-attributes {
   font-size: 60%;
-  color: #eee;
   font-style: italic;
   font-weight: lighter;
+  color: #494949;
+  background-color: #e4bfa8;
+  border: 1px solid #ba8868;
+  border-radius: 4px;
+  margin-left: 2px;
 }
 
 nav {
   float: left;
   display: block;
   width: 250px;
-  background: #fff;
+  background: #ececec;
   overflow: auto;
   position: fixed;
   height: 100%;
+  margin-left: -20px;
+  padding-left: 10px;
 }
 
 nav h3 {
   margin-top: 12px;
-  font-size: 13px;
+  font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 700;
@@ -176,7 +191,7 @@ nav h3 {
 }
 
 nav ul {
-  font-family: 'Lucida Grande', 'Lucida Sans Unicode', arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 100%;
   line-height: 17px;
   padding: 0;
@@ -186,7 +201,6 @@ nav ul {
 
 nav ul a,
 nav ul a:active {
-  font-family: 'Montserrat', sans-serif;
   line-height: 18px;
   padding: 0;
   display: block;
@@ -195,7 +209,7 @@ nav ul a:active {
 
 nav a:hover,
 nav a:active {
-  color: #606;
+  color: #15206f;
 }
 
 nav > ul {
@@ -203,7 +217,7 @@ nav > ul {
 }
 
 nav > ul > li > a {
-  color: #606;
+  color: #15206f;
 }
 
 nav ul ul {
@@ -225,15 +239,15 @@ nav ul ul a:active {
 }
 
 nav h2 {
-   font-size: 12px;
-   margin: 0;
-   padding: 0;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
 }
 
 nav > h2 > a {
    display: block;
    margin: 10px 0 -10px;
-   color: #606 !important;
+   color: #15206f !important;
 }
 
 footer {
@@ -267,11 +281,11 @@ footer {
 }
 
 .type-signature {
-  color: #CA79CA
+  color: #7d7a7a
 }
 
 .type-signature:last-child {
-  color: #eee;
+  color: #aaaaaa;
 }
 
 .name, .signature {
@@ -279,7 +293,7 @@ footer {
 }
 
 .signature {
-    color: #fc83ff;
+    color: #0d152a;
 }
 
 .details {
@@ -416,6 +430,11 @@ footer {
    font-size: 100%;
 }
 
+.params .name, .props .name {
+  font-weight: 600;
+  font-size: 110%;
+}
+
 .params td, .params th, .props td, .props th {
    margin: 0px;
    text-align: left;
@@ -429,12 +448,7 @@ footer {
 }
 
 .params thead tr, .props thead tr {
-   background-color: #fff;
-   font-weight: bold;
-}
-
-.params .params thead tr, .props .props thead tr {
-   background-color: #fff;
+   background-color: #ececec;
    font-weight: bold;
 }
 
@@ -449,7 +463,7 @@ footer {
 }
 
 span.param-type, .params td .param-type, .param-type dd {
-   color: #606;
+  color: #15206f;
   font-family: Consolas, Monaco, 'Andale Mono', monospace
 }
 
@@ -608,6 +622,7 @@ span.param-type, .params td .param-type, .param-type dd {
     z-index: 3;
     padding: 0 10px;
     transition: left 0.2s;
+    margin-left: 0px;
   }
 
   .navicon-button {
