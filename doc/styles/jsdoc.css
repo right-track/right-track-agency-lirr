@@ -138,8 +138,8 @@ tt, code, kbd, samp {
 
 #main {
   float: right;
-  min-width: 360px;
-  width: calc(100% - 240px);
+  margin-left: 240px;
+  margin-right: 15px;
 }
 
 header {
@@ -605,7 +605,7 @@ span.param-type, .params td .param-type, .param-type dd {
   z-index: 1;
 }
 
-@media only screen and (min-width: 320px) and (max-width: 680px) {
+@media only screen and (max-width: 680px) {
   body {
     overflow-x: hidden;
   }
@@ -633,9 +633,13 @@ span.param-type, .params td .param-type, .param-type dd {
     z-index: 2;
   }
 
+  h1 {
+    font-size: 36px;
+  }
+
   #main {
-    width: 100%;
-    min-width: 360px;
+    margin-left: 15px;
+    margin-right: 15px;
   }
 
   #main h1.page-title {

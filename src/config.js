@@ -7,7 +7,7 @@
  * @module config
  */
 
-const template = require('right-track-agency-abstract');
+const template = require('right-track-agency');
 
 
 // Reset and load the default configuration

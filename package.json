@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "deepmerge": "^1.5.1",
-    "right-track-agency-abstract": "^1.0.0",
+    "right-track-agency": "^1.0.0",
     "right-track-core": "^0.9.0",
-    "right-track-db-abstract": "^1.1.0"
+    "right-track-db": "^1.1.0"
   },
   "devDependencies": {
     "jsdoc": "^3.5.5"
