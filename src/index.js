@@ -1,19 +1,28 @@
 'use strict';
 
-/**
- * ### Right Track Agency: Long Island Rail Road
- * This module contains agency-specific configuration and functions
- * for the Long Island Rail Road
- * @module /
- */
+const RightTrackAgency = require('right-track-agency');
 
-// Export functions
-module.exports = {
+const moduleDirectory = __dirname + "/../";
+
+
+/**
+ * RightTrackAgency implementation for the Long Island Rail Road
+ *
+ * See the Right Track Agency project ({@link https://github.com/right-track/right-track-agency})
+ * for more information.
+ * @class
+ */
+class LIRR extends RightTrackAgency {
 
   /**
-   * Agency Configuration
-   * @see module:config
+   * Create a new RightTrackAgency for Metro North Railroad & SLE
    */
-  config: require('./config.js'),
+  constructor() {
+    super(moduleDirectory);
+  }
 
-};
+}
+
+
+// Export functions
+module.exports = new LIRR();
