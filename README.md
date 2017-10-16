@@ -24,3 +24,14 @@ or online at [https://docs.righttrack.io/right-track-agency-lirr](https://docs.r
 Additional documentation about the `RightTrackAgency` class can be found in the 
 [right-track-agency](https://github.com/right-track/right-track-agency) project 
 and online at [https://docs.righttrack.io/right-track-agency](https://docs.righttrack.io/right-track-agency).
+
+### Usage
+
+On `require` the module will return a new instance of the **Long Island Railroad** 
+implementation of a `RightTrackAgency` Class.
+
+To get the agency configuration properties:
+```javascript
+const LIRR = require('right-track-agency-lirr');
+let config = LIRR.getConfig();
+```

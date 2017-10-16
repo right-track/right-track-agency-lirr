@@ -15,7 +15,7 @@ const moduleDirectory = __dirname + "/../";
 class LIRR extends RightTrackAgency {
 
   /**
-   * Create a new RightTrackAgency for Metro North Railroad & SLE
+   * Create a new RightTrackAgency for the Long Island Railroad
    */
   constructor() {
     super(moduleDirectory);
