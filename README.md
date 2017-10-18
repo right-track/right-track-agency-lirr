@@ -1,7 +1,8 @@
 Long Island Rail Road
 =====================
 
-#### node module: [right-track-agency-lirr](https://www.npmjs.com/package/right-track-agency-lirr)
+**node module:** [right-track-agency-lirr](https://www.npmjs.com/package/right-track-agency-lirr)  
+**GitHub repo:** [right-track/right-track-agency-lirr](https://github.com/right-track/right-track-agency-lirr)
 
 ---
 
