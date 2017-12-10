@@ -21,5 +21,8 @@
     "img": {
       "icon": "./static/img/icon.png"
     }
+  },
+  "build": {
+    "updateURL": "http://web.mta.info/developers/data/lirr/google_transit.zip"
   }
 }
