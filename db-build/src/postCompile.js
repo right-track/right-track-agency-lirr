@@ -50,18 +50,21 @@ function postCompile(agencyOptions, db, callback) {
       db.all("SELECT stop_id FROM gtfs_stops;", function(err, rows) {
 
         // Update Stop
-        _updateStopUrl(db, rows, 0, function() {
-
-          // Finish when all stops are updated
-          db.exec("COMMIT", function() {
-            return callback();
-          });
-
-        });
+        _updateStopUrl(db, rows, 0, _finish);
 
       });
     });
 
+  }
+
+  /**
+   * Commit the changes and return with the callback
+   * @private
+   */
+  function _finish() {
+    db.exec("COMMIT", function() {
+      return callback();
+    });
   }
 
 }
