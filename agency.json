@@ -11,9 +11,9 @@
     "archiveDir": "./static/db/archive/"
   },
   "stationFeed": {
-    "stationURL": "",
-    "gtfs-rt": {
-      "url": "",
+    "stationURL": "http://traintime.lirr.org/traintime.php?startsta={{ORIGIN_ID}}&endsta={{DESTINATION_ID}}",
+    "gtfsrt": {
+      "url": "https://mnorth.prod.acquia-sites.com/wse/LIRR/gtfsrt/realtime/{{GTFS_RT_API_KEY}}/json",
       "apiKey": ""
     }
   },

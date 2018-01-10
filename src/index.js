@@ -1,6 +1,7 @@
 'use strict';
 
 const RightTrackAgency = require('right-track-agency');
+const feed = require('./feed.js');
 
 const moduleDirectory = __dirname + "/../";
 
@@ -19,6 +20,14 @@ class LIRR extends RightTrackAgency {
    */
   constructor() {
     super(moduleDirectory);
+  }
+
+  isFeedSupported() {
+    return true;
+  }
+
+  loadFeed(db, origin, callback) {
+    return feed(db, origin, this.config, callback);
   }
 
 }
