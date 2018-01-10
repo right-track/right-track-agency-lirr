@@ -13,9 +13,11 @@ used to add agency-specific configuration and functionality to various [Right Tr
 
 This module provides the following agency-specific information:
 
+* Build Scripts for creating a Right Track Database for LIRR (using the [right-track-db-build](https://github.com/right-track/right-track-db-build) project)
 * The latest compiled Right Track Database for LIRR
 * The archived Right Track Databases for LIRR
 * Agency configuration properties to be used in various _Right Track_ projects
+* The functions to generate a LIRR Station Feed for the [right-track-server](https://github.com/right-track/right-track-server)
 
 ### Documentation
 
@@ -28,11 +30,39 @@ and online at [https://docs.righttrack.io/right-track-agency](https://docs.right
 
 ### Usage
 
-On `require` the module will return a new instance of the **Long Island Railroad** 
+On `require` the module will return a new instance of the **Long Island Rail Road**
 implementation of a `RightTrackAgency` Class.
 
 To get the agency configuration properties:
 ```javascript
 const LIRR = require('right-track-agency-lirr');
+
+// Optionally load an additional configuration file
+LIRR.readConfig('/path/to/config.json');
+
+// Get the merged configuration
 let config = LIRR.getConfig();
+```
+
+To get the real-time `StationFeed` for Jamaica Station:
+```javascript
+const core = require('right-track-core');
+const RightTrackDB = require('right-track-db-sqlite3');
+const LIRR = require('right-track-agency-lirr');
+
+// Set up the Right Track DB for LIRR
+let db = new RightTrackDB(LIRR);
+
+// Get the Stop for Jamaica (id='15') by querying the RightTrackDB
+core.query.stops.getStop(db, '15', function(err, stop) {
+
+  // Load the StationFeed for Jamaica
+  LIRR.loadFeed(db, stop, function(err, feed) {
+
+    // Do something with the feed
+    console.log(feed);
+
+  });
+
+});
 ```
