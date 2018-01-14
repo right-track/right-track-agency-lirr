@@ -268,127 +268,26 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
       let track = cells[3].rawText.replace(/^\s+|\s+$/g, '');
       let statusText = cells[4].rawText.replace(/^\s+|\s+$/g, '');
 
-      // Create Date/Time from Departure
-      let dep = DateTime.createFromTime(time, true);
 
-      // Parse Track
-      if ( track === '--' ) {
-        track = '';
-      }
+      // Build the Departure
+      _buildDeparture(db, origin, time, destinationName, track, statusText, rtData, function(departure) {
 
-      // Parse the Delay Time
-      let delay = 0;
-      if ( statusText.toLowerCase().indexOf('late') !== -1 ) {
-        try {
-          let toParse = statusText;
-          toParse = toParse.toLowerCase();
-          toParse = toParse.replace('late', '');
-          toParse = toParse.replace('\"', '');
-          toParse = toParse.replace('min', '');
-          delay = parseInt(toParse);
-
-          if ( !isNaN(delay) ) {
-            statusText = "Late " + delay;
-          }
-        }
-        catch (err) {
-          delay = 0;
-          statusText = "Late";
-        }
-      }
-
-
-
-      // Get Destination Stop from Destination Name
-      core.query.stops.getStopByName(db, destinationName, function(err, destination) {
-
-
-        // Destination not found, use name from table
-        if ( destination === undefined ) {
-          destination = new core.gtfs.Stop('', destinationName, 0, 0);
+        // Add built departure to list
+        if ( departure !== undefined ) {
+          DEPARTURES.push(departure);
         }
 
-
-        // Get the Departure Trip
-        core.query.trips.getTripByDeparture(db, origin.id, destination.id, dep, function(err, trip) {
-
-
-          // See if there's a match in the GTFS-RT delays
-          if ( trip !== undefined && rtData !== undefined ) {
-            for ( let i = 0; i < rtData.length; i++ ) {
-              if ( rtData[i].trip_id === trip.id ) {
-                let gtfsDelay = rtData[i].delay;
-
-                // TrainTime says 'Left Station'
-                if ( statusText.toLowerCase() === 'left station' ) {
-                  delay = 0;
-                }
-
-                // No Delays, set status to On Time
-                else if ( delay === 0 && gtfsDelay === 0 ) {
-                  statusText = "On Time";
-                }
-
-                // Combine GTFS and TT Delay Information
-                else if ( delay === 0 && gtfsDelay > 0 ) {
-                  statusText = "Late " + gtfsDelay;
-                  delay = gtfsDelay;
-                }
-                else if ( delay < gtfsDelay ) {
-                  statusText = "Late " + delay + "-" + gtfsDelay;
-                }
-                else if ( gtfsDelay < delay ) {
-                  statusText = "Late " + gtfsDelay + "-" + delay;
-                  delay = gtfsDelay;
-                }
-
-              }
+        // Return when all departures have been built
+        count++;
+        if ( count === rows.length ) {
+          DEPARTURES.sort(Departure.sort);
+          return callback(
+            {
+              updated: DateTime.now(),
+              departures: DEPARTURES
             }
-          }
-
-
-
-          // Add Delay Time to estimated departure
-          let estDeparture = dep.clone().deltaMins(delay);
-
-
-          // Build the Status
-          let status = new Status(
-            statusText,
-            delay,
-            estDeparture,
-            track
           );
-
-          // Build the Departure
-          let departure = new Departure(
-            dep,
-            destination,
-            trip,
-            status
-          );
-
-
-          // Add to list of Departures, ignoring trains that 'left station' more than 5 minutes ago
-          if ( statusText.toLowerCase() !== 'left station' || ( statusText.toLowerCase() === 'left station' && dep >= DateTime.now().deltaMins(-5) ) ) {
-            DEPARTURES.push(departure);
-          }
-
-
-          // Return when all departures have been built
-          count++;
-          if ( count === rows.length ) {
-            DEPARTURES.sort(Departure.sort);
-            return callback(
-              {
-                updated: DateTime.now(),
-                departures: DEPARTURES
-              }
-            );
-          }
-
-
-        });
+        }
 
       });
 
@@ -403,7 +302,144 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
 }
 
 
+/**
+ * Build the Departure from the TrainTime information
+ * @param {RightTrackDB} db The Right Track DB to query
+ * @param {Stop} origin The origin Stop
+ * @param {String} time The parsed TrainTime departure time
+ * @param {String} destinationName The parsed TrainTime destination name
+ * @param {String} track The parsed TrainTime track information
+ * @param {String} statusText The parsed TrainTime status information
+ * @param {Object[]} rtData GTFS RT Data
+ * @param {function} callback Callback function(departure)
+ * @private
+ */
+function _buildDeparture(db, origin, time, destinationName, track, statusText, rtData, callback) {
 
+  // Create Date/Time from Departure
+  let dep = undefined;
+  try {
+    dep = DateTime.createFromTime(time, true);
+  }
+  catch (err) {
+    return callback();
+  }
+
+  // Parse Track
+  if ( track === '--' ) {
+    track = '';
+  }
+
+  // Parse the Delay Time
+  let delay = 0;
+  if ( statusText.toLowerCase().indexOf('late') !== -1 ) {
+    try {
+      let toParse = statusText;
+      toParse = toParse.toLowerCase();
+      toParse = toParse.replace('late', '');
+      toParse = toParse.replace('\"', '');
+      toParse = toParse.replace('min', '');
+      delay = parseInt(toParse);
+
+      if ( !isNaN(delay) ) {
+        statusText = "Late " + delay;
+      }
+    }
+    catch (err) {
+      delay = 0;
+      statusText = "Late";
+    }
+  }
+
+
+
+  // Get Destination Stop from Destination Name
+  core.query.stops.getStopByName(db, destinationName, function(err, destination) {
+
+
+    // Destination not found, use name from table
+    if ( destination === undefined ) {
+      destination = new core.gtfs.Stop('', destinationName, 0, 0);
+    }
+
+
+    // Get the Departure Trip
+    core.query.trips.getTripByDeparture(db, origin.id, destination.id, dep, function(err, trip) {
+
+
+      // See if there's a match in the GTFS-RT delays
+      if ( trip !== undefined && rtData !== undefined ) {
+        for ( let i = 0; i < rtData.length; i++ ) {
+          if ( rtData[i].trip_id === trip.id ) {
+            let gtfsDelay = rtData[i].delay;
+
+            // TrainTime says 'Left Station'
+            if ( statusText.toLowerCase() === 'left station' ) {
+              delay = 0;
+            }
+
+            // No Delays, set status to On Time
+            else if ( delay === 0 && gtfsDelay === 0 ) {
+              statusText = "On Time";
+            }
+
+            // Combine GTFS and TT Delay Information
+            else if ( delay === 0 && gtfsDelay > 0 ) {
+              statusText = "Late " + gtfsDelay;
+              delay = gtfsDelay;
+            }
+            else if ( delay < gtfsDelay ) {
+              statusText = "Late " + delay + "-" + gtfsDelay;
+            }
+            else if ( gtfsDelay < delay ) {
+              statusText = "Late " + gtfsDelay + "-" + delay;
+              delay = gtfsDelay;
+            }
+
+          }
+        }
+      }
+
+
+
+      // Add Delay Time to estimated departure
+      let estDeparture = dep.clone().deltaMins(delay);
+
+
+      // Build the Status
+      let status = new Status(
+        statusText,
+        delay,
+        estDeparture,
+        track
+      );
+
+      // Build the Departure
+      let departure = new Departure(
+        dep,
+        destination,
+        trip,
+        status
+      );
+
+
+      // Return departure, ignoring trains that 'left station' more than 5 minutes ago
+      if ( statusText.toLowerCase() !== 'left station' || ( statusText.toLowerCase() === 'left station' && dep >= DateTime.now().deltaMins(-5) ) ) {
+        return callback(departure);
+      }
+      else {
+        return callback();
+      }
+
+
+
+
+
+    });
+
+  });
+
+}
 
 
 
