@@ -50,6 +50,13 @@ function feed(db, origin, config, callback) {
     // Build Station Feed with Train Time data
     _getTrainTime(db, origin, rtData, function(feed) {
 
+      // Check to make sure the feed updated date/time is set
+      if ( feed === undefined ) {
+        return callback(
+          new Error('5003|Could Not Parse Station Data|The LIRR TrainTime website did not return a valid response. Please try again later.')
+        )
+      }
+
       // Return the Station Feed
       return callback(null, feed);
 
@@ -144,7 +151,12 @@ function _getTrainTime(db, origin, rtData, callback) {
     combined.sort(Departure.sort);
 
     // Return Station Feed
-    return callback(new StationFeed(origin, lastUpdated, combined));
+    if ( combined.length > 0 && lastUpdated !== undefined ) {
+      return callback(new StationFeed(origin, lastUpdated, combined));
+    }
+    else {
+      return callback();
+    }
 
   }
 
