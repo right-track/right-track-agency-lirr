@@ -24,5 +24,11 @@
   },
   "build": {
     "updateURL": "http://web.mta.info/developers/data/lirr/google_transit.zip"
+  },
+  "colors": {
+    "primary": "#0f47a1",
+    "primaryText": "#dddddd",
+    "secondary": "#263238",
+    "secondaryText": "#dddddd"
   }
 }
