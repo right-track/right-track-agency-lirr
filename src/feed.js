@@ -54,7 +54,7 @@ function feed(db, origin, config, callback) {
       if ( feed === undefined ) {
         return callback(
           new Error('5003|Could Not Parse Station Data|The LIRR TrainTime website did not return a valid response. Please try again later.')
-        )
+        );
       }
 
       // Return the Station Feed
@@ -126,7 +126,7 @@ function _getTrainTime(db, origin, rtData, callback) {
         let departure = departures[i];
         for ( let j = 0; j < combined.length; j++ ) {
           let c = combined[j];
-          if ( c.trip.id === departure.trip.id ) {
+          if ( c.trip !== undefined && departure.trip !== undefined && c.trip.id === departure.trip.id ) {
             found = true;
           }
         }
