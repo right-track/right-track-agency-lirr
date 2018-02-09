@@ -239,6 +239,10 @@ function _downloadTrainTime(db, origin, destination, rtData, callback) {
  */
 function _parseTrainTime(db, origin, data, rtData, callback) {
 
+  // Set counters
+  let count = 1;
+  let done = 0;
+
   // List of departures to return
   let DEPARTURES = [];
 
@@ -268,7 +272,7 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
     }
 
     // Parse each row of the table, ignoring the header
-    let count = 1;
+    done = rows.length;
     for ( let i = 1; i < rows.length; i++ ) {
       let row = rows[i];
       let cells = row.querySelectorAll('td');
@@ -280,28 +284,24 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
       let track = cells[3].rawText.replace(/^\s+|\s+$/g, '');
       let statusText = cells[4].rawText.replace(/^\s+|\s+$/g, '');
 
-
       // Build the Departure
-      _buildDeparture(db, origin, time, destinationName, track, statusText, rtData, function(departure) {
+      try {
+        _buildDeparture(db, origin, time, destinationName, track, statusText, rtData, function (departure) {
 
-        // Add built departure to list
-        if ( departure !== undefined ) {
-          DEPARTURES.push(departure);
-        }
+          // Add built departure to list
+          if ( departure !== undefined ) {
+            DEPARTURES.push(departure);
+          }
 
-        // Return when all departures have been built
-        count++;
-        if ( count === rows.length ) {
-          DEPARTURES.sort(Departure.sort);
-          return callback(
-            {
-              updated: DateTime.now(),
-              departures: DEPARTURES
-            }
-          );
-        }
+          _finish();
 
-      });
+        });
+      }
+      catch (err) {
+        console.log("ERROR: Could not build departure " + time + " from " + origin.name + " to " + destinationName);
+        console.error(err);
+        _finish();
+      }
 
     }
 
@@ -310,6 +310,20 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
     return callback();
   }
 
+
+  function _finish() {
+    // Return when all departures have been built
+    count++;
+    if ( count >= done ) {
+      DEPARTURES.sort(Departure.sort);
+      return callback(
+        {
+          updated: DateTime.now(),
+          departures: DEPARTURES
+        }
+      );
+    }
+  }
 
 }
 
