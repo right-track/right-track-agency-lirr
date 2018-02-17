@@ -5,10 +5,12 @@
  * This script performs the LIRR-specific Database fixes
  * @param {Object} agencyOptions Agency DB-Build Options
  * @param {Object} db SQLite database
+ * @param {function} log DB-Build Log functions
+ * @param {Object} errors DB-Build Error functions
  * @param {function} callback Callback function()
  * @private
  */
-function postCompile(agencyOptions, db, callback) {
+function postCompile(agencyOptions, db, log, errors, callback) {
 
   // Perform post-compile if a compile was requested...
   if ( agencyOptions.compile === true ) {
