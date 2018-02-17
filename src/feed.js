@@ -555,23 +555,25 @@ function _parseGTFSRT(data, callback) {
         let ent = ents[i];
 
         // Get Trip Update
-        if ( ent.hasOwnProperty('FeedEntity') ) {
-          if ( ent.FeedEntity.hasOwnProperty('TripUpdate') ) {
-            let trip = ent.FeedEntity.TripUpdate;
+        if ( ent !== undefined && ent !== null ) {
+          if ( ent.hasOwnProperty('FeedEntity') ) {
+            if ( ent.FeedEntity.hasOwnProperty('TripUpdate') ) {
+              let trip = ent.FeedEntity.TripUpdate;
 
-            // Get the delay information for the trip
-            let id = trip.TripDescriptor.trip_id;
-            let delay = trip.TripDescriptor.StopTimeUpdates[0].StopTimeUpdate.Arrival.delay;
-            delay = delay / 60;
+              // Get the delay information for the trip
+              let id = trip.TripDescriptor.trip_id;
+              let delay = trip.TripDescriptor.StopTimeUpdates[0].StopTimeUpdate.Arrival.delay;
+              delay = delay / 60;
 
-            // Add Trip to return object
-            rtn.push(
-              {
-                trip_id: id,
-                delay: delay
-              }
-            );
+              // Add Trip to return object
+              rtn.push(
+                {
+                  trip_id: id,
+                  delay: delay
+                }
+              );
 
+            }
           }
         }
 
