@@ -5,11 +5,12 @@ const https = require('https');
 const cache = require('memory-cache');
 const parse = require('node-html-parser').parse;
 const core = require('right-track-core');
-
 const DateTime = core.utils.DateTime;
-const StationFeed = core.rt.StationFeed.StationFeed;
-const Departure = core.rt.StationFeed.StationFeedDeparture;
-const Status = core.rt.StationFeed.StationFeedDepartureStatus;
+
+const SF = require('right-track-agency/src/StationFeed');
+const StationFeed = SF.StationFeed;
+const Departure = SF.StationFeedDeparture;
+const Status = SF.StationFeedDepartureStatus;
 
 
 // Amount of time (ms) to keep cached data
