@@ -1,5 +1,8 @@
 'use strict';
 
+const path = require('path');
+const fs = require('fs');
+const readline = require('readline');
 const DateTime = require('right-track-core').utils.DateTime;
 
 
@@ -7,7 +10,8 @@ const DateTime = require('right-track-core').utils.DateTime;
 const TERM_IDs = ['8', '12', '1', '2', '15'];
 
 // List of Holidays with No Peak Service
-const HOLIDAYS = [20170101, 20170116, 20170220, 20170529, 20170704, 20170904, 20171123, 20171124, 20171225, 20180101, 20180115, 20180219, 20180528, 20180704, 20180903, 20181122, 20181123, 20181225];
+const HOLIDAYS_TABLE = '../rt/rt_holidays.csv';
+const HOLIDAYS = [];
 
 // Set Time Seconds
 const SIX_AM = 21600;   // 6:00 AM
@@ -25,50 +29,55 @@ const EIGHT_PM = 72000; // 8:00 PM
  */
 function peak(db, tripId, callback) {
 
-  // Check if Trip Stops at a Terminal
-  _tripStopsAtTerm(db, tripId, function(stopsAtTerm) {
+  // Read the Holidays from the Holidays Table
+  _readHolidays(function() {
 
-    // Stops at a Terminal...
-    if ( stopsAtTerm ) {
+    // Check if Trip Stops at a Terminal
+    _tripStopsAtTerm(db, tripId, function(stopsAtTerm) {
 
-
-      // Get the Days of the Week the Trip operates on
-      _getDOWCode(db, tripId, function(dow) {
-
-        // Operates on a Weekday...
-        if ( dow > 0 ) {
+      // Stops at a Terminal...
+      if ( stopsAtTerm ) {
 
 
-          // Check if the Trip operates during peak times
-          _operatesDuringPeak(db, tripId, function(peak) {
+        // Get the Days of the Week the Trip operates on
+        _getDOWCode(db, tripId, function(dow) {
 
-            // Could be Peak...
-            if ( peak ) {
-              return callback(dow);
-            }
+          // Operates on a Weekday...
+          if ( dow > 0 ) {
 
-            // Does not operate during peak times...
-            else {
-              return callback(0);
-            }
 
-          });
+            // Check if the Trip operates during peak times
+            _operatesDuringPeak(db, tripId, function(peak) {
 
-        }
+              // Could be Peak...
+              if ( peak ) {
+                return callback(dow);
+              }
 
-        // Does not operate on a Weekday...
-        else {
-          return callback(0);
-        }
+              // Does not operate during peak times...
+              else {
+                return callback(0);
+              }
 
-      });
+            });
 
-    }
+          }
 
-    // Does not Stop at a Terminal...
-    else {
-      return callback(0);
-    }
+          // Does not operate on a Weekday...
+          else {
+            return callback(0);
+          }
+
+        });
+
+      }
+
+      // Does not Stop at a Terminal...
+      else {
+        return callback(0);
+      }
+
+    });
 
   });
 
@@ -255,6 +264,67 @@ function _operatesDuringPeak(db, tripId, callback) {
     return callback(false);
 
   });
+
+}
+
+
+
+
+/**
+ * Parse the Holidays file and add Holidays that do not have
+ * peak service to the Holidays list
+ * @param callback
+ * @private
+ */
+function _readHolidays(callback) {
+
+  // Full Location to file
+  let location = path.normalize(__dirname + '/' + HOLIDAYS_TABLE);
+
+  // File Exists...
+  if ( fs.existsSync(location) ) {
+
+    // File headers
+    let headers = [];
+
+    let lineReader = readline.createInterface({
+      input: fs.createReadStream(location)
+    });
+
+    lineReader.on('line', function (line) {
+      let values = line.split(',');
+      if ( headers.length === 0 ) {
+        headers = values;
+      }
+      else if ( values.length === headers.length ) {
+        let params = {};
+        for ( let i = 0; i < values.length; i++ ) {
+          params[headers[i]] = values[i];
+        }
+
+        // Add Holidays no peak service
+        if ( parseInt(params.peak) === 0 ) {
+          HOLIDAYS.push(parseInt(params.date));
+        }
+
+      }
+    });
+
+    lineReader.on('close', function() {
+      _finish();
+    });
+
+  }
+
+  // File Does Not Exist...
+  else {
+    _finish();
+  }
+
+
+  function _finish() {
+    return callback();
+  }
 
 }
 
