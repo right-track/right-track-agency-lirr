@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "docs": "jsdoc -c jsdoc.json --readme README.md --template $NODE_PATH/docdash"
+    "docs": "jsdoc -c jsdoc.json --readme README.md --template $NODE_PATH/@dwaring87/docdash"
   },
   "dependencies": {
     "deepmerge": "^2.0.1",
@@ -17,7 +17,8 @@
     "right-track-db": "^1.2.0"
   },
   "devDependencies": {
-    "jsdoc": "^3.5.5"
+    "jsdoc": "^3.5.5",
+    "@dwaring87/docdash": "^0.4.1"
   },
   "homepage": "https://righttrack.io",
   "repository": {
