@@ -33,6 +33,56 @@
   },
   "transit": {
     "agency": "mta",
-    "division": "lirr"
+    "division": "lirr",
+    "lines": [
+      {
+        "routeShortName": "Babylon",
+        "lineCode": "Babylon"
+      },
+      {
+        "routeShortName": "Port Jefferson",
+        "lineCode": "Port-Jefferson"
+      },
+      {
+        "routeShortName": "Belmont",
+        "lineCode": "Belmont"
+      },
+      {
+        "routeShortName": "City Zone",
+        "lineCode": "City-Terminal-Zone"
+      },
+      {
+        "routeShortName": "Hempstead",
+        "lineCode": "Hempstead"
+      },
+      {
+        "routeShortName": "Oyster Bay",
+        "lineCode": "Oyster-Bay"
+      },
+      {
+        "routeShortName": "Ronkonkoma",
+        "lineCode": "Ronkonkoma"
+      },
+      {
+        "routeShortName": "Montauk",
+        "lineCode": "Montauk"
+      },
+      {
+        "routeShortName": "Long Beach",
+        "lineCode": "Long-Beach"
+      },
+      {
+        "routeShortName": "Far Rockaway",
+        "lineCode": "Far-Rockaway"
+      },
+      {
+        "routeShortName": "West Hempstead",
+        "lineCode": "West-Hempstead"
+      },
+      {
+        "routeShortName": "Port Washington",
+        "lineCode": "Port-Washington"
+      }
+    ]
   }
 }
