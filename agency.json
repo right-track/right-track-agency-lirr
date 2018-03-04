@@ -4,7 +4,8 @@
   "maintainer": {
     "name": "David Waring",
     "email": "dev@davidwaring.net",
-    "website": "https://www.davidwaring.net/"
+    "website": "https://www.davidwaring.net/",
+    "source": "https://github.com/right-track/right-track-agency-lirr"
   },
   "db": {
     "location": "./static/db/latest/database.db",
