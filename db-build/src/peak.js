@@ -11,7 +11,6 @@ const TERM_IDs = ['8', '12', '1', '2', '15'];
 
 // List of Holidays with No Peak Service
 const HOLIDAYS_TABLE = '../rt/rt_holidays.csv';
-const HOLIDAYS = [];
 
 // Set Time Seconds
 const SIX_AM = 21600;   // 6:00 AM
@@ -30,7 +29,7 @@ const EIGHT_PM = 72000; // 8:00 PM
 function peak(db, tripId, callback) {
 
   // Read the Holidays from the Holidays Table
-  _readHolidays(function() {
+  _readHolidays(function(holidays) {
 
     // Check if Trip Stops at a Terminal
     _tripStopsAtTerm(db, tripId, function(stopsAtTerm) {
@@ -40,7 +39,7 @@ function peak(db, tripId, callback) {
 
 
         // Get the Days of the Week the Trip operates on
-        _getDOWCode(db, tripId, function(dow) {
+        _getDOWCode(db, tripId, holidays, function(dow) {
 
           // Operates on a Weekday...
           if ( dow > 0 ) {
@@ -110,6 +109,7 @@ function _tripStopsAtTerm(db, tripId, callback) {
  * Check which Days of the Week the Trip operates on
  * @param {object} db SQLite Database
  * @param {string} tripId GTFS Trip ID
+ * @param {array} holidays List of Holidays
  * @param {function} callback Callback function(int)
  * @param {int} callback.weekday
  *    0 = just weekend
@@ -117,7 +117,7 @@ function _tripStopsAtTerm(db, tripId, callback) {
  *    2 = mixed weekend and weekday
  * @private
  */
-function _getDOWCode(db, tripId, callback) {
+function _getDOWCode(db, tripId, holidays, callback) {
 
   // DOW Flags
   let weekday = false;
@@ -162,7 +162,7 @@ function _getDOWCode(db, tripId, callback) {
         let date = rows[i].date;
 
         // Skip Holidays
-        if ( !HOLIDAYS.includes(date) ) {
+        if ( !holidays.includes(date) ) {
           let dow = DateTime.createFromDate(date).getDateDOW();
           if ( dow === "saturday" || dow === "sunday" ) {
             weekend = true;
@@ -218,44 +218,45 @@ function _operatesDuringPeak(db, tripId, callback) {
   let select = "SELECT arrival_time, departure_time, direction_id " +
     "FROM gtfs_stop_times " +
     "INNER JOIN gtfs_trips ON gtfs_trips.trip_id = gtfs_stop_times.trip_id " +
-    "WHERE gtfs_stop_times.trip_id = '" + tripId + "' " +
-    "AND stop_id IN ('" + TERM_IDs.join("', '") + "');";
+    "WHERE gtfs_stop_times.trip_id = '" + tripId + "';";
 
   // Run Query
   db.all(select, function(err, rows) {
-    if ( err ) {
+    if ( err || !rows || rows.length === 0 ) {
       return callback(false);
     }
 
-    // Parse Each Set of Arrival/Departure Times
-    for ( let i = 0; i < rows.length; i++ ) {
+    // Get Trip Direction
+    let direction = rows[0].direction_id;
 
-      // Set values
-      let arrivalTime = rows[i].arrival_time;
-      let departureTime = rows[i].departure_time;
-      let direction = rows[i].direction_id;
+    // Get first/last stop index
+    let index = 0;
+    if ( direction === 1 ) {
+      index = rows.length-1;
+    }
 
+    // Set values
+    let arrivalTime = rows[index].arrival_time;
+    let departureTime = rows[index].departure_time;
 
-      // INBOUND TRIPS
-      if ( direction === 1 ) {
-        let arrival = DateTime.createFromTime(arrivalTime).getTimeSeconds();
+    // INBOUND TRIPS
+    if ( direction === 1 ) {
+      let arrival = DateTime.createFromTime(arrivalTime).getTimeSeconds();
 
-        // Peak: Arrival time between 6 and 10 AM
-        if ( arrival >= SIX_AM && arrival <= TEN_AM ) {
-          return callback(true);
-        }
-
+      // Peak: Arrival time between 6 and 10 AM
+      if ( arrival >= SIX_AM && arrival <= TEN_AM ) {
+        return callback(true);
       }
 
-      // OUTBOUND TRIPS
-      else if ( direction === 0 ) {
-        let departure = DateTime.createFromTime(departureTime).getTimeSeconds();
+    }
 
-        // Peak: Departure between 4 and 8 PM
-        if ( departure >= FOUR_PM && departure <= EIGHT_PM ) {
-          return callback(true);
-        }
+    // OUTBOUND TRIPS
+    else if ( direction === 0 ) {
+      let departure = DateTime.createFromTime(departureTime).getTimeSeconds();
 
+      // Peak: Departure between 4 and 8 PM
+      if ( departure >= FOUR_PM && departure <= EIGHT_PM ) {
+        return callback(true);
       }
 
     }
@@ -277,6 +278,9 @@ function _operatesDuringPeak(db, tripId, callback) {
  * @private
  */
 function _readHolidays(callback) {
+
+  // List of Holidays
+  let holidays = [];
 
   // Full Location to file
   let location = path.normalize(__dirname + '/' + HOLIDAYS_TABLE);
@@ -304,7 +308,7 @@ function _readHolidays(callback) {
 
         // Add Holidays no peak service
         if ( parseInt(params.peak) === 0 ) {
-          HOLIDAYS.push(parseInt(params.date));
+          holidays.push(parseInt(params.date));
         }
 
       }
@@ -323,7 +327,7 @@ function _readHolidays(callback) {
 
 
   function _finish() {
-    return callback();
+    return callback(holidays);
   }
 
 }
