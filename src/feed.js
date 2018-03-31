@@ -400,12 +400,7 @@ function _buildDeparture(db, origin, time, destinationName, track, statusText, r
       // Unknown Trip
       if ( trip === undefined ) {
         trip = new Trip(
-          "Unknown-" + dep.getTimeGTFS() + "-" + destination.id,
-          new Route("-1", "", "", -1, {
-            agency: new Agency("", "", "")
-          }),
-          new Service("-1", 0, 0, 0, 0, 0, 0, 0, DateTime.now().getDateInt(), DateTime.now().getDateInt()),
-          []
+          "Unknown-" + dep.getTimeGTFS() + "-" + destination.id
         );
       }
 
