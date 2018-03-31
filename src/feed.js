@@ -6,6 +6,10 @@ const cache = require('memory-cache');
 const parse = require('node-html-parser').parse;
 const core = require('right-track-core');
 const DateTime = core.utils.DateTime;
+const Trip = core.gtfs.Trip;
+const Route = core.gtfs.Route;
+const Service = core.gtfs.Service;
+const Agency = core.gtfs.Agency;
 
 const SF = require('right-track-agency/src/StationFeed');
 const StationFeed = SF.StationFeed;
@@ -393,6 +397,18 @@ function _buildDeparture(db, origin, time, destinationName, track, statusText, r
     // Get the Departure Trip
     core.query.trips.getTripByDeparture(db, origin.id, destination.id, dep, function(err, trip) {
 
+      // Unknown Trip
+      if ( trip === undefined ) {
+        trip = new Trip(
+          "Unknown-" + dep.getTimeGTFS() + "-" + destination.id,
+          new Route("-1", "", "", -1, {
+            agency: new Agency("", "", "")
+          }),
+          new Service("-1", 0, 0, 0, 0, 0, 0, 0, DateTime.now().getDateInt(), DateTime.now().getDateInt()),
+          []
+        );
+      }
+
 
       // See if there's a match in the GTFS-RT delays
       if ( trip !== undefined && rtData !== undefined ) {
@@ -422,7 +438,6 @@ function _buildDeparture(db, origin, time, destinationName, track, statusText, r
               statusText = "Late " + gtfsDelay + "-" + delay;
               delay = gtfsDelay;
             }
-
           }
         }
       }
