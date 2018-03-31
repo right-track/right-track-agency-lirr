@@ -1,5 +1,6 @@
 {
   "name": "Long Island Rail Road",
+  "title": "Right Track: LIRR",
   "id": "lirr",
   "maintainer": {
     "name": "David Waring",
@@ -20,7 +21,8 @@
   },
   "static": {
     "img": {
-      "icon": "./static/img/icon.png"
+      "icon": "./static/img/icon.png",
+      "android": "./static/img/app/android/"
     }
   },
   "build": {
