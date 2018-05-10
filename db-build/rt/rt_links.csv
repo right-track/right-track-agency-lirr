@@ -1,10 +1,10 @@
-link_category_title|link_title|link_description|link_url
-App Resources|Google Play|View Right Track: LIRR's listing in the Google Play store.  Install updates, rate the app and leave comments.|https://play.google.com/store/apps/details?id=com.waring.RT.LIRR
-App Resources|App Website|View the website for this app.  Find information about features and updates for the app along with contact information and a comments section to leave feedback or ask questions.|http://davidwaring.net/rt/lirr/
-App Resources|Facebook|Like Right Track on facebook to get the latest news and updates.|https://www.facebook.com/RightTrackAndroid
-LIRR Links|LIRR Website|Homepage for the Long Island Rail Road.  Get the latest news, updates, schedules and fares directly from the LIRR.|http://new.mta.info/lirr
-LIRR Links|LIRR Mobile|This is the mobile version of the LIRR website.  This website can be used to view statuses, search schedules and fares, and view maps.|http://m.mta.info/mt/new.mta.info?un_jtt_home&un_jtt_v_home=yes
-LIRR Links|Schedule Search|Full schedule search provided by the LIRR.  Includes transfers and fare information.|http://lirr42.mta.info/
-Regional Transportation Services|LIRR Connecting Services|View a list of transportation services that connect with the Long Island Rail Road.|http://web.mta.info/lirr/ConnectingService/
-Regional Transportation Services|MTA|Homepage for the Metropolitan Transportation Authority.  Get information for all MTA-operated transportation services (NYC Subways, Buses, LIRR, roads).|http://new.mta.info/
-Regional Transportation Services|Port Authority|List of commuter services operated by the Port Authority of New York & New Jersey (Bus Terminals, Bridges and Tunnels, PATH, Airports, etc).|http://www.panynj.gov/commuting-traveling.html
+"link_category_title","link_title","link_description","link_url"
+"App Resources","Google Play","View Right Track: LIRR's listing in the Google Play store.  Install updates, rate the app and leave comments.","https://play.google.com/store/apps/details?id=com.waring.RT.LIRR"
+"App Resources","App Website","View the website for this app.  Find information about features and updates for the app along with contact information and a comments section to leave feedback or ask questions.","http://davidwaring.net/rt/lirr/"
+"App Resources","Facebook","Like Right Track on facebook to get the latest news and updates.","https://www.facebook.com/RightTrackAndroid"
+"LIRR Links","LIRR Website","Homepage for the Long Island Rail Road.  Get the latest news, updates, schedules and fares directly from the LIRR.","http://new.mta.info/lirr"
+"LIRR Links","LIRR Mobile","This is the mobile version of the LIRR website.  This website can be used to view statuses, search schedules and fares, and view maps.","http://m.mta.info/mt/new.mta.info?un_jtt_home&un_jtt_v_home=yes"
+"LIRR Links","Schedule Search","Full schedule search provided by the LIRR.  Includes transfers and fare information.","http://lirr42.mta.info/"
+"Regional Transportation Services","LIRR Connecting Services","View a list of transportation services that connect with the Long Island Rail Road.","http://web.mta.info/lirr/ConnectingService/"
+"Regional Transportation Services","MTA","Homepage for the Metropolitan Transportation Authority.  Get information for all MTA-operated transportation services (NYC Subways, Buses, LIRR, roads).","http://new.mta.info/"
+"Regional Transportation Services","Port Authority","List of commuter services operated by the Port Authority of New York & New Jersey (Bus Terminals, Bridges and Tunnels, PATH, Airports, etc).","http://www.panynj.gov/commuting-traveling.html"
