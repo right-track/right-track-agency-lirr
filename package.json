@@ -13,7 +13,7 @@
     "memory-cache": "^0.2.0",
     "node-html-parser": "^1.1.6",
     "right-track-agency": "^1.1.0",
-    "right-track-core": "^1.0.0",
+    "right-track-core": "^1.5.2",
     "right-track-db": "^1.2.0"
   },
   "devDependencies": {
