@@ -7,7 +7,7 @@ const DateTime = require('right-track-core').utils.DateTime;
 
 
 // List of City Terminal Zone Stop IDs
-const TERM_IDs = ['8', '12', '1', '2', '15'];
+const TERM_IDs = ['237', '241', '118', '90', '102'];
 
 // List of Holidays with No Peak Service
 const HOLIDAYS_TABLE = '../rt/rt_holidays.csv';
