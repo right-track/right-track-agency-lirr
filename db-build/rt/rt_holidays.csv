@@ -1,19 +1,9 @@
 date,holiday_name,peak,service_info
-20170101,New Years Day,0,Holiday service in effect
-20170116,Martin Luther King Jr. Day,0,Holiday service in effect
-20170220,Presidents Day,0,Holiday service in effect
-20170529,Memorial Day,0,Holiday service in effect
-20170704,Independence Day,0,Holiday service in effect
-20170904,Labor Day,0,Holiday service in effect
-20171123,Thanksgiving Day,0,Holiday service in effect
-20171124,Black Friday,0,Regular weekday service in effect
-20171225,Christmas Day,0,Holiday service in effect
-20180101,New Years Day,0,Holiday service in effect
-20180115,Martin Luther King Jr. Day,0,Holiday service in effect
-20180219,Presidents Day,0,Holiday service in effect
-20180528,Memorial Day,0,Holiday service in effect
-20180704,Independence Day,0,Holiday service in effect
-20180903,Labor Day,0,Holiday service in effect
-20181122,Thanksgiving Day,0,Holiday service in effect
-20181123,Black Friday,0,Regular weekday service in effect
-20181225,Christmas Day,0,Holiday service in effect
+20190101,New Years Day,0,Holiday service in effect
+20190218,Presidents Day,0,Holiday service in effect
+20190527,Memorial Day,0,Holiday service in effect
+20190704,Independence Day,0,Holiday service in effect
+20190902,Labor Day,0,Holiday service in effect
+20191128,Thanksgiving Day,0,Holiday service in effect
+20191225,Christmas Day,0,Holiday service in effect
+20200101,New Years Day,0,Holiday service in effect
