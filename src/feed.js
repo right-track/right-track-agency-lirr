@@ -21,7 +21,7 @@ const Status = SF.StationFeedDepartureStatus;
 let CACHE_TIME = 60*1000;
 
 // Amount of time (ms) for download to timeout
-let DOWNLOAD_TIMEOUT = 7*1000;
+let DOWNLOAD_TIMEOUT = 4*1000;
 
 // Agency Configuration
 let CONFIG = {};
@@ -85,39 +85,25 @@ function feed(db, origin, config, callback) {
  * @private
  */
 function _getTrainTime(db, origin, rtData, callback) {
-  let done = 0;
-  let max = -1;
 
-  // Combined parsed data to return
-  let combined = [];
+  // Last Update Date/Time
   let lastUpdated = undefined;
 
-  // Get the next stops from the origin
-  _getNextStops(db, origin, function(stops) {
-    max = stops.length;
-
-    // Parse each of the destination stops
-    for ( let i = 0; i < stops.length; i++ ) {
-
-      // Get the TT info for the origin --> stop pair
-      _getTrainTimeData(db, origin, stops[i], rtData, _build);
-
-    }
-
-  });
-
+  // Get the Origin's TrainTime Page
+  _getTrainTimeData(db, origin, rtData, _build);
 
 
   // Parse the returned data for the origin --> stop pair
   function _build(data) {
-    done ++;
+
+    let departures = [];
 
     // Parse returned data
     if ( data !== undefined ) {
 
       // Combine the data
       let updated = data.updated;
-      let departures = data.departures;
+      departures = data.departures;
 
       // Get most recent updated date
       if ( lastUpdated === undefined ||
@@ -125,39 +111,23 @@ function _getTrainTime(db, origin, rtData, callback) {
         lastUpdated = updated;
       }
 
-      // Add new departures to list
-      for ( let i = 0; i < departures.length; i++ ) {
-        let found = false;
-        let departure = departures[i];
-        for ( let j = 0; j < combined.length; j++ ) {
-          let c = combined[j];
-          if ( c.trip !== undefined && departure.trip !== undefined && c.trip.id === departure.trip.id ) {
-            found = true;
-          }
-        }
-        if ( !found ) {
-          combined.push(departure);
-        }
-      }
-
     }
 
     // Return all of the data once all requests have finished
-    if ( done === max ) {
-      _finish();
-    }
+    _finish(departures);
+    
   }
 
 
   // Build the Station Feed to Return
-  function _finish() {
+  function _finish(departures) {
 
     // Sort the combined departures
-    combined.sort(Departure.sort);
+    departures.sort(Departure.sort);
 
     // Return Station Feed
-    if ( combined.length > 0 && lastUpdated !== undefined ) {
-      return callback(new StationFeed(origin, lastUpdated, combined));
+    if ( departures.length > 0 && lastUpdated !== undefined ) {
+      return callback(new StationFeed(origin, lastUpdated, departures));
     }
     else {
       return callback();
@@ -172,25 +142,24 @@ function _getTrainTime(db, origin, rtData, callback) {
  * Get the Train Time Data for the specified origin --> destination Stops
  * @param {RightTrackDB} db The Right Track DB to query GTFS data from
  * @param {Stop} origin Origin Stop
- * @param {Stop} destination Destination Stop
  * @param {Object[]} rtData GTFS RT Data
  * @param {function} callback Callback function(data)
  * @private
  */
-function _getTrainTimeData(db, origin, destination, rtData, callback) {
+function _getTrainTimeData(db, origin, rtData, callback) {
 
   // Check cache for Train Time Data
-  let data = cache.get(origin.statusId + "-" + destination.statusId);
+  let data = cache.get(origin.statusId);
   if ( data !== null ) {
     return callback(data);
   }
 
   // Update Train Time Data from source
-  _downloadTrainTime(db, origin, destination, rtData, function(data) {
+  _downloadTrainTime(db, origin, rtData, function(data) {
 
     // Add Data to Cache
     cache.put(
-      origin.statusId + "-" + destination.statusId,
+      origin.statusId,
       data,
       CACHE_TIME
     );
@@ -207,15 +176,14 @@ function _getTrainTimeData(db, origin, destination, rtData, callback) {
  * Download fresh Train Time data for the origin --> destination Stops
  * @param {RightTrackDB} db The Right Track DB to query GTFS data from
  * @param {Stop} origin Origin Stop
- * @param {Stop} destination Destination Stop
  * @param {Object[]} rtData GTFS RT Data
  * @param {function} callback Callback function(data)
  * @private
  */
-function _downloadTrainTime(db, origin, destination, rtData, callback) {
+function _downloadTrainTime(db, origin, rtData, callback) {
   let url = CONFIG.stationFeed.stationURL
-    .replace("{{ORIGIN_ID}}", origin.statusId)
-    .replace("{{DESTINATION_ID}}", destination.statusId);
+    .replace("{{ORIGIN_ID}}", origin.statusId);
+
 
   // Download the Train Time Data
   _download(url, function(data) {
@@ -282,16 +250,38 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
       let row = rows[i];
       let cells = row.querySelectorAll('td');
 
-
       // Get the data from the cells
       let time = cells[0].rawText.replace(/^\s+|\s+$/g, '');
-      let destinationName = cells[2].rawText.replace(/^\s+|\s+$/g, '');
+      let shortName = cells[0].attributes.title;
+      let destinationName = cells[1].rawText.replace(/^\s+|\s+$/g, '');
+      let infoText = cells[2].rawText.replace(/^\s+|\s+$/g, '');
       let track = cells[3].rawText.replace(/^\s+|\s+$/g, '');
-      let statusText = cells[4].rawText.replace(/^\s+|\s+$/g, '');
+
+      // Parse Info into Status
+      let statusText = "Scheduled";
+      if ( infoText.indexOf("min") !== -1 ) {
+        try {
+          let now = DateTime.now();
+          let departDT = DateTime.createFromTime(time, true);
+          let estDepartsMin = parseInt(infoText.replace(" min", ""));
+          let schedDepartsMin = Math.round((departDT.toTimestamp() - now.toTimestamp()) / 60000);
+          let delta = estDepartsMin - schedDepartsMin;
+          if ( delta > 1 ) {
+            statusText = "Late " + delta + " min";
+          }
+          else {
+            statusText = "On Time";
+          }
+        }
+        catch (err) {}
+      }
+      else {
+        statusText = infoText;
+      }
 
       // Build the Departure
       try {
-        _buildDeparture(db, origin, time, destinationName, track, statusText, rtData, function (departure) {
+        _buildDeparture(db, origin, time, destinationName, track, statusText, rtData, function(departure) {
 
           // Add built departure to list
           if ( departure !== undefined ) {
@@ -363,7 +353,7 @@ function _buildDeparture(db, origin, time, destinationName, track, statusText, r
 
   // Parse the Delay Time
   let delay = 0;
-  if ( statusText.toLowerCase().indexOf('late') !== -1 ) {
+  if ( statusText.toLowerCase().indexOf('min') !== -1 ) {
     try {
       let toParse = statusText;
       toParse = toParse.toLowerCase();
@@ -406,37 +396,66 @@ function _buildDeparture(db, origin, time, destinationName, track, statusText, r
 
 
       // See if there's a match in the GTFS-RT delays
+      let gtfsDelay = undefined;
       if ( trip !== undefined && rtData !== undefined ) {
-        for ( let i = 0; i < rtData.length; i++ ) {
-          if ( rtData[i].trip_id === trip.id ) {
-            let gtfsDelay = rtData[i].delay;
 
-            // TrainTime says 'Left Station'
-            if ( statusText.toLowerCase() === 'left station' ) {
-              delay = 0;
-            }
+        // Get Trip from rtData
+        if ( rtData.hasOwnProperty("trip_" + trip.id) ) {
+          gtfsDelay = 0;
+          let tripData = rtData["trip_" + trip.id];
 
-            // No Delays, set status to On Time
-            else if ( delay === 0 && gtfsDelay === 0 ) {
-              statusText = "On Time";
-            }
+          // Stop in rtData
+          if ( tripData.hasOwnProperty("stop_" + origin.id) ) {
+            gtfsDelay = tripData["stop_" + origin.id]
+          }
 
-            // Combine GTFS and TT Delay Information
-            else if ( delay === 0 && gtfsDelay > 0 ) {
-              statusText = "Late " + gtfsDelay;
-              delay = gtfsDelay;
+          // Stop NOT in rtData
+          else {
+            let delays = []
+            for ( let s in tripData ) {
+                if ( tripData.hasOwnProperty(s) ) {
+                    delays.push(tripData[s])
+                }
             }
-            else if ( delay < gtfsDelay ) {
-              statusText = "Late " + delay + "-" + gtfsDelay;
-            }
-            else if ( gtfsDelay < delay ) {
-              statusText = "Late " + gtfsDelay + "-" + delay;
-              delay = gtfsDelay;
+            if ( delays.length > 0 ) {
+              gtfsDelay = delays[0];
             }
           }
         }
-      }
 
+
+        // TrainTime says 'Left Station'
+        if ( statusText.toLowerCase() === 'left station' ) {
+          delay = 0;
+        }
+
+        // No GTFS RT data
+        else if ( statusText == "" && gtfsDelay == undefined ) {
+          statusText == "Scheduled";
+        }
+        else if ( statusText == "" && gtfsDelay == 0 ) {
+          statusText = "On Time";
+        }
+
+        // No Delays, set status to On Time
+        else if ( delay === 0 && gtfsDelay === 0 ) {
+          statusText = "On Time";
+        }
+
+        // Combine GTFS and TT Delay Information
+        else if ( delay === 0 && gtfsDelay > 0 ) {
+          statusText = "Late " + gtfsDelay;
+          delay = gtfsDelay;
+        }
+        else if ( delay < gtfsDelay ) {
+          statusText = "Late " + delay + "-" + gtfsDelay;
+        }
+        else if ( gtfsDelay < delay ) {
+          statusText = "Late " + gtfsDelay + "-" + delay;
+          delay = gtfsDelay;
+        }
+
+      }
 
 
       // Add Delay Time to estimated departure
@@ -509,9 +528,7 @@ function _getGTFSRT(callback) {
 
   // Update GTFS RT from source
   _updateGTFSRT(function(data) {
-    if ( Object.keys(data).length > 0 ) {
-      cache.put('GTFS-RT', data, CACHE_TIME);
-    }
+    cache.put('GTFS-RT', data, CACHE_TIME);
     return callback(data);
   });
 
@@ -557,46 +574,59 @@ function _updateGTFSRT(callback) {
  */
 function _parseGTFSRT(data, callback) {
   // Parsed Data to Return
-  let rtn = [];
+  let rtn = {}
 
   // Parse data as JSON
-  data = JSON.parse(data);
+  try {
+    data = JSON.parse(data);
 
-  // Get Trip Entities
-  if ( data.hasOwnProperty('FeedHeader') ) {
-    if ( data.FeedHeader.hasOwnProperty('Entities') ) {
-      let ents = data.FeedHeader.Entities;
+    // Get Trip Entities
+    if ( data.hasOwnProperty('data') ) {
+      if ( data.data.hasOwnProperty('entity') ) {
+        let ents = data.data.entity;
 
-      // Parse each of the entities
-      for ( let i = 0; i < ents.length; i++ ) {
-        let ent = ents[i];
+        // Parse each of the entities
+        for ( let i = 0; i < ents.length; i++ ) {
+          let ent = ents[i];
 
-        // Get Trip Update
-        if ( ent !== undefined && ent !== null ) {
-          if ( ent.hasOwnProperty('FeedEntity') ) {
-            if ( ent.FeedEntity.hasOwnProperty('TripUpdate') ) {
-              let trip = ent.FeedEntity.TripUpdate;
+          // Get Trip Update
+          if ( ent !== undefined && ent !== null ) {
+            if ( ent.hasOwnProperty('trip_update') ) {
+              let trip_update = ent.trip_update;
 
-              // Get the delay information for the trip
-              let id = trip.TripDescriptor.trip_id;
-              let delay = trip.TripDescriptor.StopTimeUpdates[0].StopTimeUpdate.Arrival.delay;
-              delay = delay / 60;
+              // Get the Trip ID
+              let trip_id = trip_update.trip.trip_id;
+              rtn["trip_" + trip_id] = [];
 
-              // Add Trip to return object
-              rtn.push(
-                {
-                  trip_id: id,
-                  delay: delay
+              // Parse each stop's delay
+              if ( trip_update.hasOwnProperty('stop_time_update') ) {
+                for ( let j = 0; j < trip_update.stop_time_update.length; j++ ) {
+                  
+                  if ( trip_update.stop_time_update[j].hasOwnProperty('departure') ) {
+                    let stop_id = trip_update.stop_time_update[j].stop_id;
+                    let delay = trip_update.stop_time_update[j].departure.delay;
+                    delay = delay / 60;
+                    delay = Math.round(delay);
+                    if ( delay < 0 ) delay = 0
+
+                    // Add Trip to return object
+                    rtn["trip_" + trip_id]["stop_" + stop_id] = delay
+                  }
+
                 }
-              );
+              }
 
             }
           }
+
         }
 
       }
-
     }
+
+  }
+  catch(err) {
+    console.log("Warning: Could not parse GTFS-RT Feed!");
   }
 
   // Return the parsed data
