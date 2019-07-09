@@ -47,14 +47,8 @@ function postCompile(agencyOptions, db, log, errors, callback) {
       db.exec("UPDATE gtfs_stop_times SET pickup_type=0;");
       db.exec("UPDATE gtfs_stop_times SET drop_off_type=0;");
 
-      // Set stop_url in gtfs_stops to 'http://lirr42.mta.info/stationInfo.php?id=[stop_id]'
-      console.log("    ... Setting stop URLs");
-      db.all("SELECT stop_id FROM gtfs_stops;", function(err, rows) {
-
-        // Update Stop
-        _updateStopUrl(db, rows, 0, _finish);
-
-      });
+      // Finish
+      return _finish();
     });
 
   }
@@ -69,29 +63,6 @@ function postCompile(agencyOptions, db, log, errors, callback) {
     });
   }
 
-}
-
-/**
- * Update the specified Stop url
- * @param db RightTrackDB
- * @param rows Rows of Stops
- * @param count Stop counter
- * @param callback Stop callback function
- * @private
- */
-function _updateStopUrl(db, rows, count, callback) {
-  if ( count < rows.length ) {
-    let id = rows[count].stop_id;
-    let url = "http://lirr42.mta.info/stationInfo.php?id=" + id;
-    db.exec("UPDATE gtfs_stops SET stop_url='" + url + "' WHERE stop_id='" + id + "';",
-      function() {
-        _updateStopUrl(db, rows, count+1, callback);
-      }
-    );
-  }
-  else {
-    return callback();
-  }
 }
 
 
