@@ -47,10 +47,36 @@ function postCompile(agencyOptions, db, log, errors, callback) {
       db.exec("UPDATE gtfs_stop_times SET pickup_type=0;");
       db.exec("UPDATE gtfs_stop_times SET drop_off_type=0;");
 
-      // Finish
-      return _finish();
+      // Update Trip Short Name
+      db.all("SELECT trip_id, trip_short_name FROM gtfs_trips;", function(err, rows) {
+        _updateTrip(db, rows, 0, _finish);
+      });
     });
 
+  }
+
+  /**
+   * Update missing Trip Short Name of the specified Trip
+   * @param  {RightTrackDB}   db   Right Track DB
+   * @param  {Object[]}   rows     Array of DB Rows
+   * @param  {int}        count    Row Counter
+   * @param  {Function}   callback Callback function
+   */
+  function _updateTrip(db, rows, count, callback) {
+    if ( count < rows.length ) {
+      let short = rows[count].trip_short_name;
+      let id = rows[count].trip_id;
+      if ( !short || short === "" ) {
+        let parts = id.split("_");
+        short = parts[2];
+        db.exec("UPDATE gtfs_trips SET trip_short_name='" + short + "' WHERE trip_id='" + id + "';", function() {
+          _updateTrip(db, rows, count+1, callback);
+        });
+      }
+    }
+    else {
+      return callback();
+    }
   }
 
   /**
