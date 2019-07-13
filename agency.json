@@ -22,7 +22,10 @@
   "static": {
     "img": {
       "icon": "./static/img/icon.png",
-      "android": "./static/img/app/android/"
+      "circle": {
+        "192": "./static/img/icon_circle_192.png",
+        "512": "./static/img/icon_circle_512.png"
+      }
     }
   },
   "build": {
