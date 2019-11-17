@@ -48,6 +48,7 @@ function postCompile(agencyOptions, db, log, errors, callback) {
       db.exec("UPDATE gtfs_stop_times SET drop_off_type=0;");
 
       // Update Trip Short Name
+      console.log("    ... Updating trip short name");
       db.all("SELECT trip_id, trip_short_name FROM gtfs_trips;", function(err, rows) {
         _updateTrip(db, rows, 0, _finish);
       });
@@ -72,6 +73,9 @@ function postCompile(agencyOptions, db, log, errors, callback) {
         db.exec("UPDATE gtfs_trips SET trip_short_name='" + short + "' WHERE trip_id='" + id + "';", function() {
           _updateTrip(db, rows, count+1, callback);
         });
+      }
+      else {
+        _updateTrip(db, rows, count+1, callback);
       }
     }
     else {
