@@ -9,7 +9,11 @@
     "source": "https://github.com/right-track/right-track-agency-lirr"
   },
   "db": {
-    "location": "./static/db/database.db"
+    "location": "./static/db/database.db",
+    "archive": {
+      "source": "google_drive",
+      "location": "1UMMesQair-7aRoIgejenJ7QhfI3blWj-"
+    }
   },
   "stationFeed": {
     "stationURL": "http://traintime.lirr.org/departureResults.php?sta={{ORIGIN_ID}}",
