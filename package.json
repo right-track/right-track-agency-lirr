@@ -17,8 +17,8 @@
     "right-track-db": "^1.2.5"
   },
   "devDependencies": {
-    "jsdoc": "^3.5.5",
-    "@dwaring87/docdash": "^0.4.1"
+    "@dwaring87/docdash": "^0.4.1",
+    "jsdoc": "^3.6.3"
   },
   "homepage": "https://righttrack.io",
   "repository": {
