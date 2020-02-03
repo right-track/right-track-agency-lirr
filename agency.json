@@ -28,6 +28,11 @@
       "circle": {
         "192": "./static/img/icon_circle_192.png",
         "512": "./static/img/icon_circle_512.png"
+      },
+      "square": {
+        "192": "./static/img/icon_square_192.png",
+        "512": "./static/img/icon_square_512.png",
+        "1024": "./static/img/icon_square_1024.png"
       }
     }
   },
