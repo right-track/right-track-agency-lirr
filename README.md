@@ -14,10 +14,12 @@ used to add agency-specific configuration and functionality to various [Right Tr
 This module provides the following agency-specific information:
 
 * Build Scripts for creating a Right Track Database for LIRR (using the [right-track-db-build](https://github.com/right-track/right-track-db-build) project)
-* The latest compiled Right Track Database for LIRR
-* The archived Right Track Databases for LIRR
+* The latest compiled Right Track Database for LIRR (located in the ./static/db directory)
 * Agency configuration properties to be used in various _Right Track_ projects
 * The functions to generate a LIRR Station Feed for the [right-track-server](https://github.com/right-track/right-track-server)
+
+**NOTE:** Archived schedule databases are no longer stored in the git repository due to their storage size.  Archived LIRR  
+databases can be found in [this shared Google Drive folder](https://drive.google.com/drive/folders/1UMMesQair-7aRoIgejenJ7QhfI3blWj-).
 
 ### Documentation
 
