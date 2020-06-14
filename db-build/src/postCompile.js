@@ -71,15 +71,25 @@ function postCompile(agencyOptions, db, log, errors, callback) {
         let parts = id.split("_");
         short = parts[2];
         db.exec("UPDATE gtfs_trips SET trip_short_name='" + short + "' WHERE trip_id='" + id + "';", function() {
-          _updateTrip(db, rows, count+1, callback);
+          _next();
         });
       }
       else {
-        _updateTrip(db, rows, count+1, callback);
+        _next();
       }
     }
     else {
       return callback();
+    }
+
+    /**
+     * Start processing the next trip
+     * @private
+     */
+    function _next() {
+      process.nextTick(function() {
+        _updateTrip(db, rows, count+1, callback);
+      });
     }
   }
 
