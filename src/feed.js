@@ -2,6 +2,7 @@
 
 const http = require('http');
 const https = require('https');
+const URL = require('url');
 const cache = require('memory-cache');
 const core = require('right-track-core');
 const DateTime = core.utils.DateTime;
@@ -211,11 +212,14 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
   let departures = [];
   let count = 0;
   let total = 0;
-  
+
   // Parse into JSON
   try {
     data = JSON.parse(data);
-    total = data.length;
+    total = Array.isArray(data) ? data.length : 0;
+    if ( total === 0 ) {
+      return callback();
+    }
 
     // Parse each train
     for ( let i = 0; i < data.length; i++ ) {
@@ -441,28 +445,6 @@ function _parseGTFSRT(data, callback) {
 
 
 /**
- * Get all of the possible next stops from the specified stop
- * @param {RightTrackDB} db The Right Track DB to query GTFS data from
- * @param {Stop} stop The Origin Stop
- * @param {function} callback Callback Function(Stop[])
- * @private
- */
-function _getNextStops(db, stop, callback) {
-
-  // Get all next stops for both directions
-  let stops = [];
-  core.query.routegraph.getNextStops(db, stop.id, 0, function(err, rtn) {
-    stops = stops.concat(rtn);
-    core.query.routegraph.getNextStops(db, stop.id, 1, function(err, rtn) {
-      stops = stops.concat(rtn);
-      return callback(stops);
-    });
-  });
-
-}
-
-
-/**
  * Download the specified URL
  * @param {string} url URL to download
  * @param {Object} [headers] The headers to add to the request
@@ -472,16 +454,25 @@ function _getNextStops(db, stop, callback) {
 function _download(url, headers, callback) {
   if ( !callback ) {
     callback = headers;
-    headers = undefined;
+    headers = {};
+  }
+
+  let u = URL.parse(url);
+  let opts = {
+    protocol: u.protocol,
+    hostname: u.hostname,
+    path: u.path,
+    headers: headers
   }
 
   let scheme = http;
-  if ( url.indexOf('https://') !== -1 ) {
+  if ( u.protocol === "https:" ) {
     scheme = https;
   }
   let data = '';
   let timedout = false;
-  let request = scheme.get(url, {headers: headers}, function(res) {
+  
+  let request = scheme.get(opts, function(res) {
     res.on('data', function(chunk) {
       data += chunk;
     });
