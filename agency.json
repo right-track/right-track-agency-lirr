@@ -16,7 +16,12 @@
     }
   },
   "stationFeed": {
-    "stationURL": "http://traintime.lirr.org/departureResults.php?sta={{ORIGIN_ID}}",
+    "station": {
+      "url": "https://backend.mylirr.org/arrivals/{{ORIGIN_ID}}",
+      "headers": {
+        "accept-version": "1.5"
+      }
+    },
     "gtfsrt": {
       "url": "https://mnorth.prod.acquia-sites.com/wse/LIRR/gtfsrt/realtime/{{GTFS_RT_API_KEY}}/json",
       "apiKey": ""
