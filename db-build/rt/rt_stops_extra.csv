@@ -19,8 +19,8 @@ stop_id,status_id,display_name,zone_id
 39,CPL,Carle Place,7
 32,CHT,Cedarhurst,4
 33,CI,Central Islip,10
-31,CSH,Centre Avenue,7
-40,CPH,Cold Spring Harbor,9
+31,CAV,Centre Avenue,7
+40,CSH,Cold Spring Harbor,9
 38,CPG,Copiague,9
 36,CLP,Country Life Press,4
 44,DPK,Deer Park,9
@@ -89,7 +89,7 @@ stop_id,status_id,display_name,zone_id
 157,ODL,Oakdale,10
 155,ODE,Oceanside,7
 154,OBY,Oyster Bay,7
-163,PD,Patchogue,10
+163,PGE,Patchogue,10
 237,NYK,Penn Station,1
 165,PLN,Pinelawn,9
 162,PDM,Plandome,4
