@@ -260,7 +260,7 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
             if ( d.status.cancelled ) status_label = "CANCELLED";
             if ( delay > 0 ) status_label = "Late " + delay;
             let est_departure_dt = departure_dt.deltaMins(delay);
-            let track = d.sched_track;
+            let track = d.track ? d.track : "(" + d.sched_track + ")";
 
             // Build the Status
             let status = new Status(status_label, delay, est_departure_dt, track);
