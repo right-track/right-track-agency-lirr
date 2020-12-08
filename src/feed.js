@@ -254,13 +254,15 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
           if ( destination.statusId === dest_code ) {
             
             // Get status properties
-            let delay = d.status.opt && d.status.otp < 0 ? -1*Math.ceil(d.status.otp/60) : 0;
+            let delay = d.status.otp && d.status.otp < -60 ? -1*Math.floor(d.status.otp/60) : 0;
             let status_label = "On Time";
             if ( d.status.held ) status_label = "HELD";
             if ( d.status.cancelled ) status_label = "CANCELLED";
             if ( delay > 0 ) status_label = "Late " + delay;
-            let est_departure_dt = departure_dt.deltaMins(delay);
-            let track = d.track ? d.track : "(" + d.sched_track + ")";
+            let est_departure_dt = departure_dt.clone().deltaMins(delay);
+            let track = d.track ? d.track : d.sched_track ? "(" + d.sched_track + ")" : "";
+            track = track.replace(/[LR]([0-9]+)/g, function(x, p1) { return p1});
+            track = track.replace(/^M$/g, "Main");
 
             // Build the Status
             let status = new Status(status_label, delay, est_departure_dt, track);
