@@ -260,12 +260,19 @@ function _parseTrainTime(db, origin, data, rtData, callback) {
             if ( d.status.cancelled ) status_label = "CANCELLED";
             if ( delay > 0 ) status_label = "Late " + delay;
             let est_departure_dt = departure_dt.clone().deltaMins(delay);
-            let track = d.track ? d.track : d.sched_track ? "(" + d.sched_track + ")" : "";
-            track = track.replace(/[LR]([0-9]+)/g, function(x, p1) { return p1});
+            let track = d.track ? d.track : d.sched_track ? d.sched_track : "";
+            track = track.replace(/[LR]([0-9]+)/g, function(x, p1) { return p1 });
             track = track.replace(/^M$/g, "Main");
+            let track_scheduled = !d.track && d.sched_track !== undefined;
+            let track_changed = d.track_change;
+            let track_props = {
+              track: track,
+              scheduled: track_scheduled,
+              changed: track_changed
+            }
 
             // Build the Status
-            let status = new Status(status_label, delay, est_departure_dt, track);
+            let status = new Status(status_label, delay, est_departure_dt, track_props);
 
             // Build the Departure
             departure = new Departure(departure_dt, destination, trip, status);
