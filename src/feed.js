@@ -14,10 +14,11 @@ const Status = SF.StationFeedDepartureStatus;
 
 
 // Amount of time (ms) to keep cached data
-let CACHE_TIME = 60*1000;
+const CACHE_TIME_TT = 60*1000;
+const CACHE_TIME_RT = 120*1000;
 
 // Amount of time (ms) for download to timeout
-let DOWNLOAD_TIMEOUT = 4*1000;
+const DOWNLOAD_TIMEOUT = 4*1000;
 
 // Agency Configuration
 let CONFIG = {};
@@ -157,7 +158,7 @@ function _getTrainTimeData(db, origin, rtData, callback) {
     cache.put(
       origin.statusId,
       data,
-      CACHE_TIME
+      CACHE_TIME_TT
     );
 
     // Return the data
@@ -341,7 +342,7 @@ function _getGTFSRT(callback) {
 
   // Update GTFS RT from source
   _updateGTFSRT(function(data) {
-    cache.put('GTFS-RT', data, CACHE_TIME);
+    cache.put('GTFS-RT', data, CACHE_TIME_RT);
     return callback(data);
   });
 
