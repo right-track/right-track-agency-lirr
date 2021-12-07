@@ -56,51 +56,51 @@
     "lines": [
       {
         "routeShortName": "Babylon",
-        "lineCode": "Babylon"
+        "lineCode": "babylon"
       },
       {
         "routeShortName": "Port Jefferson",
-        "lineCode": "Port-Jefferson"
+        "lineCode": "port-jefferson"
       },
       {
         "routeShortName": "Belmont",
-        "lineCode": "Belmont"
+        "lineCode": "belmont"
       },
       {
         "routeShortName": "City Zone",
-        "lineCode": "City-Terminal-Zone"
+        "lineCode": "city-zone"
       },
       {
         "routeShortName": "Hempstead",
-        "lineCode": "Hempstead"
+        "lineCode": "hempstead"
       },
       {
         "routeShortName": "Oyster Bay",
-        "lineCode": "Oyster-Bay"
+        "lineCode": "oyster-bay"
       },
       {
         "routeShortName": "Ronkonkoma",
-        "lineCode": "Ronkonkoma"
+        "lineCode": "ronkonkoma"
       },
       {
         "routeShortName": "Montauk",
-        "lineCode": "Montauk"
+        "lineCode": "montauk"
       },
       {
         "routeShortName": "Long Beach",
-        "lineCode": "Long-Beach"
+        "lineCode": "long-beach"
       },
       {
         "routeShortName": "Far Rockaway",
-        "lineCode": "Far-Rockaway"
+        "lineCode": "far-rockaway"
       },
       {
         "routeShortName": "West Hempstead",
-        "lineCode": "West-Hempstead"
+        "lineCode": "west-hempstead"
       },
       {
         "routeShortName": "Port Washington",
-        "lineCode": "Port-Washington"
+        "lineCode": "port-washington"
       }
     ]
   }
