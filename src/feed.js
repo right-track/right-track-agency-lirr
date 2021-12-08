@@ -6,11 +6,9 @@ const URL = require('url');
 const cache = require('memory-cache');
 const core = require('right-track-core');
 const DateTime = core.utils.DateTime;
-
-const SF = require('right-track-agency/src/StationFeed');
-const StationFeed = SF.StationFeed;
-const Departure = SF.StationFeedDeparture;
-const Status = SF.StationFeedDepartureStatus;
+const StationFeed = core.classes.StationFeed.StationFeed;
+const Departure = core.classes.StationFeed.StationFeedDeparture;
+const Status = core.classes.StationFeed.StationFeedDepartureStatus;
 
 
 // Amount of time (ms) to keep cached data
