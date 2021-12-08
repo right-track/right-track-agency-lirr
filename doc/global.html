@@ -1,10 +1,9 @@
-<!-- start:readme.hbs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-		<title>Right Track Agency: LIRR</title>
+		<title>Globals</title>
 		<!--[if lt IE 9]>
 		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -86,69 +85,21 @@
 	</header>
 	<!-- end:navbar.hbs -->		<div class="page-header">
 			<div class="container">
-				<span class="kind">readme</span>
-				<h1><span class="name">Right Track Agency: LIRR</span></h1>
-				<div class="summary"><p>The Right Track Agency implementation for the Long Island Rail Road</p></div>			</div>
+				<span class="kind">global</span>
+				<h1><span class="name">Globals</span></h1>
+				<div class="summary"><p>All documented globals.</p></div>			</div>
 		</div>
 	<div class="container content">
 		<div class="row">
 			<div class="col-md-9 main-content">
-		<section class="readme-section">
-			<article><h1>Long Island Rail Road</h1>
-<p><strong>GitHub repo:</strong> <a href="https://github.com/right-track/right-track-agency-lirr">right-track/right-track-agency-lirr</a></p>
-<hr>
-<p>This module is an implementation of a <a href="https://github.com/right-track/right-track-core#right-track-agency"><em>RightTrackAgency</em></a>
-used to add agency-specific configuration and functionality to various <a href="https://github.com/right-track">Right Track Projects</a>.</p>
-<h3>Features</h3>
-<p>This module provides the following agency-specific information:</p>
-<ul>
-<li>Build Scripts for creating a Right Track Database for LIRR (using the <a href="https://github.com/right-track/right-track-db-build">right-track-db-build</a> project)</li>
-<li>The latest compiled Right Track Database for LIRR (located in the ./static/db directory)</li>
-<li>Agency configuration properties to be used in various <em>Right Track</em> projects</li>
-<li>The functions to generate a LIRR Station Feed for the <a href="https://github.com/right-track/right-track-server">right-track-server</a></li>
-</ul>
-<p><strong>NOTE:</strong> Archived schedule databases are no longer stored in the git repository due to their storage size.  Archived LIRR<br>
-databases can be found in <a href="https://drive.google.com/drive/folders/1UMMesQair-7aRoIgejenJ7QhfI3blWj-">this shared Google Drive folder</a>.</p>
-<h3>Documentation</h3>
-<p>Documentation can be found in the <strong>/doc/</strong> directory of this repository
-or online at <a href="https://docs.righttrack.io/right-track-agency-lirr">https://docs.righttrack.io/right-track-agency-lirr</a>.</p>
-<p>Additional documentation about the <code>RightTrackAgency</code> class can be found in the
-<a href="https://github.com/right-track/right-track-core">right-track-core</a> project
-and online at <a href="https://docs.righttrack.io/right-track-core">https://docs.righttrack.io/right-track-core</a>.</p>
-<h3>Usage</h3>
-<p>On <code>require</code> the module will return a new instance of the <strong>Long Island Rail Road</strong>
-implementation of a <code>RightTrackAgency</code> Class.</p>
-<p>To get the agency configuration properties:</p>
-<pre class="prettyprint source lang-javascript"><code>const LIRR = require('right-track-agency-lirr');
-
-// Optionally load an additional configuration file
-LIRR.readConfig('/path/to/config.json');
-
-// Get the merged configuration
-let config = LIRR.getConfig();
-</code></pre>
-<p>To get the real-time <code>StationFeed</code> for Jamaica Station:</p>
-<pre class="prettyprint source lang-javascript"><code>const core = require('right-track-core');
-const RightTrackDB = require('right-track-db-sqlite3');
-const LIRR = require('right-track-agency-lirr');
-
-// Set up the Right Track DB for LIRR
-let db = new RightTrackDB(LIRR);
-
-// Get the Stop for Jamaica (id='15') by querying the RightTrackDB
-core.query.stops.getStop(db, '15', function(err, stop) {
-
-  // Load the StationFeed for Jamaica
-  LIRR.loadFeed(db, stop, function(err, feed) {
-
-    // Do something with the feed
-    console.log(feed);
-
-  });
-
-});
-</code></pre></article>
-		</section>
+						<ol class="breadcrumb">
+							<li><a href="index.html">Home</a></li>
+							<li class="active">Globals</li>
+						</ol>
+					<section>
+							<article class="secondary">
+							</article>
+					</section>
 			</div>
 				<div class="col-md-3 side-content">
 					<nav class="toc hidden-print hidden-sm hidden-xs"></nav>
@@ -185,4 +136,3 @@ core.query.stops.getStop(db, '15', function(err, stop) {
 	
 </body>
 </html>
-<!-- end:readme.hbs -->
