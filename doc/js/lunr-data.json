@@ -63,16 +63,18 @@
           "list:class"
         ],
         "LIRR.html": [
-          "agenc",
           "class",
+          "core",
+          "document",
+          "https://docs.righttrack.io/right",
           "https://github.com/right",
           "implement",
           "inform",
           "island",
           "lirr",
           "long",
+          "modul",
           "more",
-          "project",
           "rail",
           "right",
           "righttrackag",
@@ -128,10 +130,6 @@
                       "ref": "index.html",
                       "tf": 158.75
                     },
-                    "LIRR.html": {
-                      "ref": "LIRR.html",
-                      "tf": 5.88235294117647
-                    },
                     "LIRR.html#isFeedSupported": {
                       "ref": "LIRR.html#isFeedSupported",
                       "tf": 7.142857142857142
@@ -166,7 +164,7 @@
                             },
                             "LIRR.html": {
                               "ref": "LIRR.html",
-                              "tf": 2.941176470588235
+                              "tf": 2.083333333333333
                             }
                           }
                         }
@@ -203,7 +201,7 @@
                     "docs": {
                       "LIRR.html": {
                         "ref": "LIRR.html",
-                        "tf": 2.941176470588235
+                        "tf": 2.083333333333333
                       }
                     }
                   }
@@ -227,7 +225,7 @@
                       },
                       "LIRR.html": {
                         "ref": "LIRR.html",
-                        "tf": 2.941176470588235
+                        "tf": 2.083333333333333
                       }
                     }
                   }
@@ -410,7 +408,7 @@
                   },
                   "LIRR.html": {
                     "ref": "LIRR.html",
-                    "tf": 2.941176470588235
+                    "tf": 2.083333333333333
                   }
                 }
               }
@@ -453,7 +451,7 @@
                   },
                   "LIRR.html": {
                     "ref": "LIRR.html",
-                    "tf": 2.941176470588235
+                    "tf": 2.083333333333333
                   }
                 }
               }
@@ -502,7 +500,7 @@
                     },
                     "LIRR.html": {
                       "ref": "LIRR.html",
-                      "tf": 2.941176470588235
+                      "tf": 4.166666666666666
                     }
                   },
                   "t": {
@@ -521,7 +519,7 @@
                                 "docs": {
                                   "LIRR.html": {
                                     "ref": "LIRR.html",
-                                    "tf": 2.941176470588235
+                                    "tf": 2.083333333333333
                                   }
                                 }
                               }
@@ -547,7 +545,7 @@
                   },
                   "LIRR.html": {
                     "ref": "LIRR.html",
-                    "tf": 2.941176470588235
+                    "tf": 2.083333333333333
                   }
                 }
               }
@@ -570,7 +568,7 @@
                     },
                     "LIRR.html": {
                       "ref": "LIRR.html",
-                      "tf": 5.88235294117647
+                      "tf": 8.333333333333332
                     }
                   },
                   "/": {
@@ -587,7 +585,7 @@
                               "docs": {
                                 "LIRR.html": {
                                   "ref": "LIRR.html",
-                                  "tf": 2.941176470588235
+                                  "tf": 2.083333333333333
                                 }
                               }
                             }
@@ -642,6 +640,10 @@
                           "list_class.html": {
                             "ref": "list_class.html",
                             "tf": 35
+                          },
+                          "LIRR.html": {
+                            "ref": "LIRR.html",
+                            "tf": 2.083333333333333
                           }
                         }
                       }
@@ -701,6 +703,20 @@
                       "ref": "LIRR.html",
                       "tf": 110
                     }
+                  }
+                }
+              }
+            }
+          },
+          "o": {
+            "docs": {},
+            "r": {
+              "docs": {},
+              "e": {
+                "docs": {
+                  "LIRR.html": {
+                    "ref": "LIRR.html",
+                    "tf": 8.333333333333332
                   }
                 }
               }
@@ -766,6 +782,83 @@
                       "docs": {},
                       "/": {
                         "docs": {},
+                        "d": {
+                          "docs": {},
+                          "o": {
+                            "docs": {},
+                            "c": {
+                              "docs": {},
+                              "s": {
+                                "docs": {},
+                                ".": {
+                                  "docs": {},
+                                  "r": {
+                                    "docs": {},
+                                    "i": {
+                                      "docs": {},
+                                      "g": {
+                                        "docs": {},
+                                        "h": {
+                                          "docs": {},
+                                          "t": {
+                                            "docs": {},
+                                            "t": {
+                                              "docs": {},
+                                              "r": {
+                                                "docs": {},
+                                                "a": {
+                                                  "docs": {},
+                                                  "c": {
+                                                    "docs": {},
+                                                    "k": {
+                                                      "docs": {},
+                                                      ".": {
+                                                        "docs": {},
+                                                        "i": {
+                                                          "docs": {},
+                                                          "o": {
+                                                            "docs": {},
+                                                            "/": {
+                                                              "docs": {},
+                                                              "r": {
+                                                                "docs": {},
+                                                                "i": {
+                                                                  "docs": {},
+                                                                  "g": {
+                                                                    "docs": {},
+                                                                    "h": {
+                                                                      "docs": {},
+                                                                      "t": {
+                                                                        "docs": {
+                                                                          "LIRR.html": {
+                                                                            "ref": "LIRR.html",
+                                                                            "tf": 2.083333333333333
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
                         "g": {
                           "docs": {},
                           "i": {
@@ -800,7 +893,7 @@
                                                         "docs": {
                                                           "LIRR.html": {
                                                             "ref": "LIRR.html",
-                                                            "tf": 2.941176470588235
+                                                            "tf": 2.083333333333333
                                                           }
                                                         }
                                                       }
@@ -831,39 +924,27 @@
           "docs": {},
           "o": {
             "docs": {},
+            "d": {
+              "docs": {},
+              "u": {
+                "docs": {},
+                "l": {
+                  "docs": {
+                    "LIRR.html": {
+                      "ref": "LIRR.html",
+                      "tf": 2.083333333333333
+                    }
+                  }
+                }
+              }
+            },
             "r": {
               "docs": {},
               "e": {
                 "docs": {
                   "LIRR.html": {
                     "ref": "LIRR.html",
-                    "tf": 2.941176470588235
-                  }
-                }
-              }
-            }
-          }
-        },
-        "p": {
-          "docs": {},
-          "r": {
-            "docs": {},
-            "o": {
-              "docs": {},
-              "j": {
-                "docs": {},
-                "e": {
-                  "docs": {},
-                  "c": {
-                    "docs": {},
-                    "t": {
-                      "docs": {
-                        "LIRR.html": {
-                          "ref": "LIRR.html",
-                          "tf": 2.941176470588235
-                        }
-                      }
-                    }
+                    "tf": 2.083333333333333
                   }
                 }
               }
@@ -878,7 +959,7 @@
               "docs": {
                 "LIRR.html": {
                   "ref": "LIRR.html",
-                  "tf": 2.941176470588235
+                  "tf": 2.083333333333333
                 }
               }
             }
@@ -1058,7 +1139,7 @@
           }
         }
       },
-      "length": 57
+      "length": 59
     },
     "corpusTokens": [
       "agenc",
@@ -1066,11 +1147,13 @@
       "callback",
       "check",
       "class",
+      "core",
       "db",
       "document",
       "feed",
       "function",
       "global",
+      "https://docs.righttrack.io/right",
       "https://github.com/right",
       "implement",
       "index",
@@ -1085,9 +1168,9 @@
       "load",
       "loadfe",
       "long",
+      "modul",
       "more",
       "origin",
-      "project",
       "rail",
       "readm",
       "real",
@@ -1150,7 +1233,7 @@
       "name": "LIRR",
       "tags": "LIRR",
       "summary": "",
-      "description": "RightTrackAgency implementation for the Long Island Rail Road See the Right Track Agency project (https://github.com/right-track/right-track-agency) for more information.",
+      "description": "RightTrackAgency implementation for the Long Island Rail Road For more information, see: Right Track core module (https://github.com/right-track/right-track-core) Right Track core documentation (https://docs.righttrack.io/right-track-core)",
       "body": ""
     },
     "LIRR.html#isFeedSupported": {
