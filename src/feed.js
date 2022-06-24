@@ -1,25 +1,16 @@
 'use strict';
 
-const http = require('http');
-const https = require('https');
-const URL = require('url');
-const cache = require('memory-cache');
+const getData = require('./gtfsrt.js');
 const core = require('right-track-core');
 const DateTime = core.utils.DateTime;
 const StationFeed = core.classes.StationFeed.StationFeed;
 const Departure = core.classes.StationFeed.StationFeedDeparture;
 const Status = core.classes.StationFeed.StationFeedDepartureStatus;
+const Position = core.classes.StationFeed.StationFeedDeparturePosition;
 
 
-// Amount of time (ms) to keep cached data
-const CACHE_TIME_TT = 60*1000;
-const CACHE_TIME_RT = 120*1000;
-
-// Amount of time (ms) for download to timeout
-const DOWNLOAD_TIMEOUT = 4*1000;
-
-// Agency Configuration
-let CONFIG = {};
+const DEPARTED_TIME = 5*60;   // Max time to display departed trains (5 min)
+const MAX_TIME = 3*60*60;     // Max time to display future departures (3 hours)
 
 
 /**
@@ -34,9 +25,6 @@ let CONFIG = {};
  */
 function feed(db, origin, config, callback) {
 
-  // Set Agency Configuration
-  CONFIG = config;
-
   // Make sure we have a valid status id
   if ( origin.statusId === '-1' ) {
     return callback(
@@ -44,465 +32,210 @@ function feed(db, origin, config, callback) {
     );
   }
 
-  // Get / Update GTFS-RT Information
-  _getGTFSRT(function(rtData) {
+  // Get the GTFS-RT Data
+  getData(config, function(err, data) {
+    if ( err ) return callback(err);
 
-    // Build Station Feed with Train Time data
-    _getTrainTime(db, origin, rtData, function(feed) {
+    // Build the feed for the requested stop
+    _buildFeed(db, origin, data, function(err, feed) {
+      if ( err ) return callback(err);
 
-      // Check to make sure the feed updated date/time is set
-      if ( feed === undefined ) {
-        return callback(
-          new Error('5003|Could Not Parse Station Data|The LIRR TrainTime website did not return a valid response. Please try again later.')
-        );
-      }
-
-      // Return the Station Feed
+      // Return the feed
       return callback(null, feed);
 
     });
-
   });
-
 }
 
 
-
-// ==== TRAIN TIME FUNCTIONS ==== //
-
-
 /**
- * Get the Train Time Data and Build the Station Feed
+ * Build the Station Feed for the requested Stop
  * @param {RightTrackDB} db The Right Track DB to query GTFS data from
  * @param {Stop} origin Origin Stop
- * @param {Object[]} rtData GTFS RT Data
- * @param {function} callback Callback function(feed)
+ * @param {Object} data GTFS-RT data, including stops and trips
+ * @param {function} callback Callback function(err, feed)
  * @private
  */
-function _getTrainTime(db, origin, rtData, callback) {
+function _buildFeed(db, origin, data, callback) {
+  try {
+    let updated = DateTime.createFromJSDate(new Date(data.updated));
+    let stop_data = data.stops.hasOwnProperty(origin.id) ? data.stops[origin.id] : [];
+    let trip_data = data.trips;
 
-  // Last Update Date/Time
-  let lastUpdated = undefined;
+    // Build each of the departures
+    let p = [];
+    for ( let i = 0; i < stop_data.length; i++ ) {
+      let departure = stop_data[i];
+      let departure_trip = trip_data[departure.trip_id];
+      p.push(_buildDeparture(db, origin, departure, departure_trip));
+    }
 
-  // Get the Origin's TrainTime Page
-  _getTrainTimeData(db, origin, rtData, _build);
+    // Execute promises
+    Promise.all(p).then(function(departures) {
 
-
-  // Parse the returned data for the origin --> stop pair
-  function _build(data) {
-
-    let departures = [];
-
-    // Parse returned data
-    if ( data !== undefined ) {
-
-      // Combine the data
-      let updated = data.updated;
-      departures = data.departures;
-
-      // Get most recent updated date
-      if ( lastUpdated === undefined ||
-        ( updated.getDateInt() > lastUpdated.getDateInt() || updated.getTimeSeconds() > lastUpdated.getTimeSeconds() ) ) {
-        lastUpdated = updated;
+      // Drop filtered departures
+      let rtn = [];
+      for ( let i = 0; i < departures.length; i++ ) {
+        if ( departures[i] ) {
+          rtn.push(departures[i]);
+        }
       }
 
-    }
+      // Build the feed
+      rtn.sort(Departure.sort);
+      let feed = new StationFeed(origin, updated, rtn);
 
-    // Return all of the data once all requests have finished
-    _finish(departures);
-    
-  }
-
-
-  // Build the Station Feed to Return
-  function _finish(departures) {
-
-    // Sort the combined departures
-    departures.sort(Departure.sort);
-
-    // Return Station Feed
-    if ( departures.length > 0 && lastUpdated !== undefined ) {
-      return callback(new StationFeed(origin, lastUpdated, departures));
-    }
-    else {
-      return callback();
-    }
-
-  }
-
-}
-
-
-/**
- * Get the Train Time Data for the specified origin --> destination Stops
- * @param {RightTrackDB} db The Right Track DB to query GTFS data from
- * @param {Stop} origin Origin Stop
- * @param {Object[]} rtData GTFS RT Data
- * @param {function} callback Callback function(data)
- * @private
- */
-function _getTrainTimeData(db, origin, rtData, callback) {
-
-  // Check cache for Train Time Data
-  let data = cache.get(origin.statusId);
-  if ( data !== null ) {
-    return callback(data);
-  }
-
-  // Update Train Time Data from source
-  _downloadTrainTime(db, origin, rtData, function(data) {
-
-    // Add Data to Cache
-    cache.put(
-      origin.statusId,
-      data,
-      CACHE_TIME_TT
-    );
-
-    // Return the data
-    return callback(data);
-
-  });
-
-}
-
-
-/**
- * Download fresh Train Time data for the origin --> destination Stops
- * @param {RightTrackDB} db The Right Track DB to query GTFS data from
- * @param {Stop} origin Origin Stop
- * @param {Object[]} rtData GTFS RT Data
- * @param {function} callback Callback function(data)
- * @private
- */
-function _downloadTrainTime(db, origin, rtData, callback) {
-  let url = CONFIG.stationFeed.station.url
-    .replace("{{ORIGIN_ID}}", origin.statusId);
-  let headers = CONFIG.stationFeed.station.headers;
-
-  // Download the Train Time Data
-  _download(url, headers, function(data) {
-
-    // Parse the Train Time Data
-    _parseTrainTime(db, origin, data, rtData, function(parsed) {
-
-      // Return the parsed data
-      return callback(parsed);
+      // Return the Feed
+      return callback(null, feed);
 
     });
-
-  });
-
+  }
+  catch (err) {
+    return callback(new Error('5003|Could not build MNR Station Feed|' + err));
+  }
 }
 
 
 /**
- * Parse the raw Train Time data
+ * Build a StationFeedDeparture with the specified stop and trip info
  * @param {RightTrackDB} db The Right Track DB to query GTFS data from
  * @param {Stop} origin Origin Stop
- * @param {string} data Raw Train Time data
- * @param {Object[]} rtData GTFS RT Data
- * @param {function} callback Callback function(data)
+ * @param {Object} departure GTFS-RT stop data for the departure
+ * @param {Object} departure_trip GTFS-RT trip data for the departure
+ * @returns {StationFeedDeparture} A SFDeparture or undefined
  * @private
  */
-function _parseTrainTime(db, origin, data, rtData, callback) {
+function _buildDeparture(db, origin, departure, departure_trip) {
+  return new Promise(function(resolve, reject) {
+    try {
 
-  // List of parsed departures and processing flags
-  let departures = [];
-  let count = 0;
-  let total = 0;
+      // Get the Estimated Departure
+      let estDepartureDT = departure.departure || departure.arrival ? 
+        DateTime.createFromJSDate(new Date(departure.departure || departure.arrival)) : 
+        undefined;
 
-  // Parse into JSON
-  try {
-    data = JSON.parse(data);
-    total = Array.isArray(data) ? data.length : 0;
-    if ( total === 0 ) {
-      return callback();
-    }
+      // Get the Destination Stop
+      core.query.stops.getStop(db, departure_trip.destination, function(err, destination) {
 
-    // Parse each train
-    for ( let i = 0; i < data.length; i++ ) {
-      let d = data[i];
-      
-      // Get departure properties
-      let departure_date = parseInt(d.run_date.replace(/-/g, ""));
-      let dest_code = d.stops[d.stops.length-1];
-      let train_num = d.train_num;
+        // Get the scheduled Trip
+        core.query.trips.getTrip(db, departure.trip_id, departure_trip.date, function(err, trip) {
 
-      // Get the matching trip by its short name
-      core.query.trips.getTripByShortName(db, train_num, departure_date, function(err, trip) {
-        
-        // Depature object to build
-        let departure = undefined;
-        
-        // Only build departure if the trip was found...
-        if ( trip ) {
+          // Get Vehicle Stop
+          let vehicle_stop_id = departure_trip?.vehicle?.stop || "";
+          core.query.stops.getStop(db, vehicle_stop_id, function(err, vehicle_stop) {
 
-          // Get the departure DateTime for the origin stop
-          let departure_dt = undefined;
-          for ( let i = 0; i < trip.stopTimes.length; i++ ) {
-            if ( trip.stopTimes[i].stop.id === origin.id ) {
-              departure_dt = trip.stopTimes[i].departure;
-            }
-          }
+            // Get Vehicle Position
+            let vehicle_lat = departure_trip?.vehicle?.lat;
+            let vehicle_lon = departure_trip?.vehicle?.lon;
+            let vehicle_status = departure_trip?.vehicle?.status;
+            let vehicle_updated = departure_trip?.vehicle?.updated ? 
+              DateTime.createFromJSDate(new Date(departure_trip.vehicle.updated)) : 
+              DateTime.now();
 
-          // Get the destination stop
-          let destination = trip.stopTimes[trip.stopTimes.length-1].stop;
-
-          // Only continue if the scheduled destination is the same as the TrainTime one
-          if ( destination.statusId === dest_code ) {
-            
-            // Get status properties
-            let delay = d.status.otp && d.status.otp < -60 ? -1*Math.floor(d.status.otp/60) : 0;
-            let status_label = "On Time";
-            if ( d.status.held ) status_label = "HELD";
-            if ( d.status.cancelled ) status_label = "CANCELLED";
-            if ( delay > 0 ) status_label = "Late " + delay;
-            let est_departure_dt = departure_dt.clone().deltaMins(delay);
-            let track = d.track ? d.track : d.sched_track ? d.sched_track : "";
-            track = track.replace(/[LR]([0-9]+)/g, function(x, p1) { return p1 });
-            track = track.replace(/^M$/g, "Main");
-            let track_scheduled = !d.track && d.sched_track !== undefined;
-            let track_changed = d.track_change;
-            let track_props = {
-              track: track,
-              scheduled: track_scheduled,
-              changed: track_changed
+            // Set Vehicle Description, based on status
+            let vehicle_description;
+            if ( vehicle_stop ) {
+              if ( vehicle_status === 0 ) {
+                vehicle_description = "Arriving at " + vehicle_stop.name;
+              }
+              else if ( vehicle_status === 1 ) {
+                vehicle_description = "Stopped at " + vehicle_stop.name;
+              }
+              else if ( vehicle_status === 2 ) {
+                vehicle_description = "In transit to " + vehicle_stop.name;
+              }
             }
 
-            // Build the Status
-            let status = new Status(status_label, delay, est_departure_dt, track_props);
+            // Get the delay between scheduled stop time and estimated stop time
+            let schedDepartureDT = estDepartureDT ? estDepartureDT.clone() : undefined;
+            if ( trip && trip.hasStopTime(origin) ) {
+              let stopTime = trip.getStopTime(origin);
+              schedDepartureDT = stopTime.departure;
+            }
+            let delay = estDepartureDT && schedDepartureDT ? 
+              estDepartureDT.getTimeSeconds() - schedDepartureDT.getTimeSeconds() :
+              0;
+
+            // Get Origin and Vehicle Stop Sequences
+            let origin_stop_sequence = trip ? trip.getStopTime(origin).stopSequence : undefined;
+            let vehicle_stop_sequence = vehicle_stop && trip ? trip.getStopTime(vehicle_stop).stopSequence : undefined;
+
+            // Set the Status Text
+            let statusText = departure.status;
+            if ( !statusText && vehicle_stop_id === origin.id && vehicle_status === 0 ) {
+              statusText = "Arriving";
+            }
+            else if ( !statusText && vehicle_stop_id === origin.id && vehicle_status === 1 ) {
+              statusText = "Arrived";
+            }
+            else if ( !statusText && vehicle_stop_sequence && origin_stop_sequence && vehicle_stop_sequence > origin_stop_sequence ) {
+              statusText = "Departed";
+            }
+            else if ( !statusText && delay < 60 ) {
+              statusText = "On Time";
+            }
+            else {
+              statusText = `Late ${Math.floor(delay/60)}m`;
+            }
+
+            // FILTER DEPARTURES
+            // Drop recently departed Trips or Trips too far in the future
+            let now_s = new Date().getTime();
+            let dep_s = departure.departure || departure.arrival;
+            let delta = (dep_s - now_s)/1000;
+            if ( (statusText === "Departed" || (statusText === "Arrived" && origin.id === destination.id)) && delta < (-1*DEPARTED_TIME) ) {
+              return resolve();
+            }
+            else if ( delta > (MAX_TIME) ) {
+              return resolve();
+            }
+
+            // Build Position
+            let position;
+            if ( vehicle_lat && vehicle_lon && vehicle_description ) {
+              position = new Position(
+                vehicle_lat,
+                vehicle_lon,
+                vehicle_description,
+                vehicle_updated
+              );
+            }
+
+            // Build Status
+            let status = new Status(
+              statusText,
+              delay > 60 ? delay : 0,
+              estDepartureDT || schedDepartureDT,
+              {
+                track: departure.track,
+                scheduled: statusText === "Scheduled"
+              }
+            );
 
             // Build the Departure
-            departure = new Departure(departure_dt, destination, trip, status);
+            let rtn = new Departure(
+              schedDepartureDT,
+              destination,
+              trip,
+              status,
+              position
+            );
 
-          }
+            return resolve(rtn);
 
-          // Destinations Don't Match!
-          else {
-            console.log("WARNING: Destination mistmatch! [" + dest_code + " !== " + destination.name + "]");
-          }
-
-        }
-        
-        // Finish with the departure
-        _finish(departure);
-
+          });
+        });
       });
     }
-  }
-
-  // Error parsing the train time response
-  catch (exception) {
-    console.log(exception);
-    return callback();
-  }
-
-  /**
-   * Return to the main callback with the parsed departures
-   */
-  function _finish(departure) {
-    if ( departure ) departures.push(departure);
-    count++;
-    if ( count >= total ) {
-      departures.sort(Departure.sort);
-      return callback({
-        updated: DateTime.now(),
-        departures: departures
-      });
-    }
-  }
-
-}
-
-
-
-// ==== GTFS RT FUNCTIONS ==== //
-
-
-/**
- * Get the cached or fresh GTFS RT data
- *
- * {
- *    trip_id: delay_mins,
- *    ...
- * }
- * @param callback Callback function(parsed data)
- * @private
- */
-function _getGTFSRT(callback) {
-
-  // Check cache for GTFS RT data
-  let data = cache.get('GTFS-RT');
-  if ( data !== null ) {
-    return callback(data);
-  }
-
-  // Update GTFS RT from source
-  _updateGTFSRT(function(data) {
-    cache.put('GTFS-RT', data, CACHE_TIME_RT);
-    return callback(data);
-  });
-
-}
-
-
-/**
- * Update the GTFS RT Data
- * @param callback Callback function(parsed data)
- * @private
- */
-function _updateGTFSRT(callback) {
-  let api_key = CONFIG.stationFeed.gtfsrt.apiKey;
-  let url = CONFIG.stationFeed.gtfsrt.url.replace('{{GTFS_RT_API_KEY}}', api_key);
-
-  // Download the GTFS RT data
-  _download(url, function(data) {
-
-    // Parse the GTFS RT data
-    _parseGTFSRT(data, function(parsed) {
-
-      // Return the parsed data
-      return callback(parsed);
-
-    });
-
-  });
-
-}
-
-/**
- * Parse the GTFS data into an Array:
- * [
- *   {
- *     trip_id: GTFS Trip Id,
- *     delay: delay in mins
- *   }
- *   ...
- * ]
- * @param data Raw GTFS RT data
- * @param callback Callback function(parsed data)
- * @private
- */
-function _parseGTFSRT(data, callback) {
-  // Parsed Data to Return
-  let rtn = {}
-
-  // Parse data as JSON
-  try {
-    data = JSON.parse(data);
-
-    // Get Trip Entities
-    if ( data.hasOwnProperty('data') ) {
-      if ( data.data.hasOwnProperty('entity') ) {
-        let ents = data.data.entity;
-
-        // Parse each of the entities
-        for ( let i = 0; i < ents.length; i++ ) {
-          let ent = ents[i];
-
-          // Get Trip Update
-          if ( ent !== undefined && ent !== null ) {
-            if ( ent.hasOwnProperty('trip_update') ) {
-              let trip_update = ent.trip_update;
-
-              // Get the Trip ID
-              let trip_id = trip_update.trip.trip_id;
-              rtn["trip_" + trip_id] = [];
-
-              // Parse each stop's delay
-              if ( trip_update.hasOwnProperty('stop_time_update') ) {
-                for ( let j = 0; j < trip_update.stop_time_update.length; j++ ) {
-                  
-                  if ( trip_update.stop_time_update[j].hasOwnProperty('departure') ) {
-                    let stop_id = trip_update.stop_time_update[j].stop_id;
-                    let delay = trip_update.stop_time_update[j].departure.delay;
-                    delay = delay / 60;
-                    delay = Math.round(delay);
-                    if ( delay < 0 ) delay = 0
-
-                    // Add Trip to return object
-                    rtn["trip_" + trip_id]["stop_" + stop_id] = delay
-                  }
-
-                }
-              }
-
-            }
-          }
-
-        }
-
-      }
-    }
-
-  }
-  catch(err) {
-    console.log("Warning: Could not parse GTFS-RT Feed!");
-  }
-
-  // Return the parsed data
-  return callback(rtn);
-}
-
-
-
-
-
-// ===== UTILITY FUNCTIONS ===== //
-
-
-/**
- * Download the specified URL
- * @param {string} url URL to download
- * @param {Object} [headers] The headers to add to the request
- * @param callback Callback function accepting downloaded data
- * @private
- */
-function _download(url, headers, callback) {
-  if ( !callback ) {
-    callback = headers;
-    headers = {};
-  }
-
-  let u = URL.parse(url);
-  let opts = {
-    protocol: u.protocol,
-    hostname: u.hostname,
-    path: u.path,
-    headers: headers
-  }
-
-  let scheme = http;
-  if ( u.protocol === "https:" ) {
-    scheme = https;
-  }
-  let data = '';
-  let timedout = false;
-  
-  let request = scheme.get(opts, function(res) {
-    res.on('data', function(chunk) {
-      data += chunk;
-    });
-    res.on('end', function() {
-      callback(data);
-    });
-  });
-  request.on('error', function(e) {
-    if ( !timedout ) {
-      console.warn('ERROR: Could not download ' + url);
-      console.warn(e);
-      callback(undefined);
+    catch (err) {
+      console.log("ERROR: Could not build departure for " + origin.name);
+      console.log(departure);
+      console.log(err);
+      resolve();
     }
   });
-  request.setTimeout(DOWNLOAD_TIMEOUT, function() {
-    timedout = true;
-    request.abort();
-    console.warn('ERROR: Request to ' + url + ' timed out');
-    callback(undefined);
-  });
 }
 
 
-
+// MODULE EXPORTS
 module.exports = feed;
