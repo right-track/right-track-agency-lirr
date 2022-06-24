@@ -11,7 +11,8 @@
   "dependencies": {
     "deepmerge": "^2.0.1",
     "memory-cache": "^0.2.0",
-    "right-track-core": "github:right-track/right-track-core"
+    "protobufjs": "^6.11.3",
+    "right-track-core": "right-track/right-track-core"
   },
   "devDependencies": {
     "foodoc": "^0.0.9",
