@@ -156,6 +156,7 @@ function _parseData(data, callback) {
       // Get Trip-level Details
       let trip_date = _convertDate(entity.tripUpdate.trip.startDate);
       let trip_route = entity.tripUpdate.trip.routeId;
+      let trip_direction = entity.tripUpdate.trip.directionId;
       let trip_stops = [];
 
       // Parse the stops
@@ -205,6 +206,7 @@ function _parseData(data, callback) {
         id: trip_id,
         date: trip_date,
         route: trip_route,
+        direction: trip_direction,
         destination: trip_destination?.id,
         stops: trip_stops,
         vehicle: {
