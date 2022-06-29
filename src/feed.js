@@ -2,6 +2,10 @@
 
 const getData = require('./gtfsrt.js');
 const core = require('right-track-core');
+const ServiceException = core.gtfs.ServiceException;
+const Service = core.gtfs.Service;
+const StopTime = core.gtfs.StopTime;
+const Trip = core.gtfs.Trip;
 const DateTime = core.utils.DateTime;
 const StationFeed = core.classes.StationFeed.StationFeed;
 const Departure = core.classes.StationFeed.StationFeedDeparture;
@@ -9,8 +13,9 @@ const Status = core.classes.StationFeed.StationFeedDepartureStatus;
 const Position = core.classes.StationFeed.StationFeedDeparturePosition;
 
 
-const DEPARTED_TIME = 5*60;   // Max time to display departed trains (5 min)
-const MAX_TIME = 3*60*60;     // Max time to display future departures (3 hours)
+const DEPARTED_TIME = 5*60;       // Max time to display departed trains (5 min)
+const MAX_DEPARTED_TIME = 10*60;  // Max time to display any train past est departure (10 min)
+const MAX_TIME = 3*60*60;         // Max time to display future departures (3 hours)
 
 
 /**
@@ -117,8 +122,8 @@ function _buildDeparture(db, origin, departure, departure_trip) {
       // Get the Destination Stop
       core.query.stops.getStop(db, departure_trip.destination, function(err, destination) {
 
-        // Get the scheduled Trip
-        core.query.trips.getTrip(db, departure.trip_id, departure_trip.date, function(err, trip) {
+        // Get the Trip (from the DB or built from the data)
+        _getTrip(db, departure, departure_trip, function(trip, unscheduled) {
 
           // Get Vehicle Stop
           let vehicle_stop_id = departure_trip?.vehicle?.stop || "";
@@ -178,11 +183,20 @@ function _buildDeparture(db, origin, departure, departure_trip) {
               statusText = `Late ${Math.floor(delay/60)}m`;
             }
 
+            // Set remarks
+            let remarks;
+            if ( unscheduled ) {
+              remarks = "Unscheduled Trip";
+            }
+
             // FILTER DEPARTURES
             // Drop recently departed Trips or Trips too far in the future
             let now_s = new Date().getTime();
-            let dep_s = departure.departure || departure.arrival;
+            let dep_s = departure.departure ? departure.departure : departure.arrival;
             let delta = (dep_s - now_s)/1000;
+            if ( delta < (-1*MAX_DEPARTED_TIME) ) {
+              return resolve();
+            }
             if ( (statusText === "Departed" || (statusText === "Arrived" && origin.id === destination.id)) && delta < (-1*DEPARTED_TIME) ) {
               return resolve();
             }
@@ -209,7 +223,8 @@ function _buildDeparture(db, origin, departure, departure_trip) {
               {
                 track: departure.track,
                 scheduled: statusText === "Scheduled"
-              }
+              },
+              remarks
             );
 
             // Build the Departure
@@ -236,6 +251,76 @@ function _buildDeparture(db, origin, departure, departure_trip) {
   });
 }
 
+/**
+ * Get the Trip for the departure, either the scheduled trip from the 
+ * database or (if not found in the DB) build a Trip with the GTFS-RT data
+ * @param {RightTrackDB} db The Right Track DB to query GTFS data from
+ * @param {Object} departure GTFS-RT stop data for the departure
+ * @param {Object} departure_trip GTFS-RT trip data from the departure
+ * @param {Function} callback Callback function(trip, unscheduled)
+ * @private
+ */
+function _getTrip(db, departure, departure_trip, callback) {
+  let count = 0;
+  let max = departure_trip.stops.length;
+
+  // Trip Metadata
+  let se;         // ServiceException
+  let s;          // Service
+  let r;          // Route
+  let sts = [];   // List of StopTimes
+
+  // First, try to find a scheduled trip in the DB
+  core.query.trips.getTrip(db, departure.trip_id, departure_trip.date, function(err, trip) {
+
+    // Return the scheduled trip
+    if ( trip ) {
+      return callback(trip);
+    }
+
+    // Build Trip with GTFS-RT Data
+
+    // Get the Trip's Route
+    core.query.routes.getRoute(db, departure_trip.route, function(err, route) {
+      r = route;
+
+      // Set the Trip's Service
+      se = new ServiceException("SE-" + departure_trip.id, departure_trip.date, ServiceException.SERVICE_ADDED);
+      s = new Service("S-" + departure_trip.trip_id, 0, 0, 0, 0, 0, 0, 0, departure_trip.date, departure_trip.date, [se]);
+
+      // Build the StopTimes
+      for ( let i = 0; i < departure_trip.stops.length; i++ ) {
+        let stop_info = departure_trip.stops[i];
+
+        // Get the Stop
+        core.query.stops.getStop(db, stop_info.id, function(err, stop) {
+          if ( stop ) {
+            let arrDT = DateTime.createFromJSDate(new Date(stop_info.arrival ? stop_info.arrival : stop_info.departure));
+            let depDT = DateTime.createFromJSDate(new Date(stop_info.departure ? stop_info.departure : stop_info.arrival));
+
+            // Build the StopTime
+            let st = new StopTime(stop, arrDT.getTimeGTFS(), depDT.getTimeGTFS(), stop_info.sequence, {date: departure_trip.date});
+            sts.push(st);
+
+            _finish();
+          }
+        });
+      }
+    });
+  });
+
+  function _finish() {
+    count++;
+    if ( count >= max ) {
+
+      // Build the Trip
+      let trip = new Trip(departure_trip.id, r, s, sts, { directionId: departure_trip.direction });
+      return callback(trip, true);
+
+    }
+  }
+
+}
 
 // MODULE EXPORTS
 module.exports = feed;
