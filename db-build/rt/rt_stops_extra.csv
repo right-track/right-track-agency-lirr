@@ -1,0 +1,125 @@
+stop_id,status_id,display_name,zone_id
+1,ABT,Albertson,7
+4,AGT,Amagansett,14
+8,AVL,Amityville,9
+241,ATL,Atlantic Terminal,1
+2,ADL,Auburndale,3
+27,BTA,Babylon,9
+225,BWN,Baldwin,7
+26,BSR,Bay Shore,10
+25,BSD,Bayside,3
+23,BRS,Bellerose,4
+16,BMR,Bellmore,7
+21,BPT,Bellport,12
+24,BRT,Belmont,4
+20,BPG,Bethpage,7
+29,BWD,Brentwood,10
+13,BHN,Bridgehampton,14
+11,BDY,Broadway,3
+39,CPL,Carle Place,7
+32,CHT,Cedarhurst,4
+33,CI,Central Islip,10
+31,CAV,Centre Avenue,7
+40,CSH,Cold Spring Harbor,9
+38,CPG,Copiague,9
+36,CLP,Country Life Press,4
+44,DPK,Deer Park,9
+42,DGL,Douglaston,3
+48,EHN,East Hampton,14
+50,ENY,East New York,1
+51,ERY,East Rockaway,7
+52,EWN,East Williston,4
+65,FRY,Far Rockaway,4
+59,FMD,Farmingdale,7
+63,FPK,Floral Park,4
+56,FLS,Flushing Main Street,3
+55,FHL,Forest Hills,1
+64,FPT,Freeport,7
+68,GCY,Garden City,4
+66,GBN,Gibson,4
+67,GCV,Glen Cove,7
+71,GHD,Glen Head,7
+76,GST,Glen Street,7
+72,GNK,Great Neck,4
+74,GRV,Great River,10
+78,GWN,Greenlawn,9
+73,GPT,Greenport,14
+77,GVL,Greenvale,7
+83,HBY,Hampton Bays,14
+84,HEM,Hempstead,4
+85,HGN,Hempstead Gardens,4
+94,HWT,Hewlett,4
+92,HVL,Hicksville,7
+89,HOL,Hollis,3
+90,HPA,Hunterspoint Avenue,1
+91,HUN,Huntington,9
+101,IWD,Inwood,4
+99,IPK,Island Park,7
+100,ISP,Islip,10
+102,JAM,Jamaica,3
+107,KGN,Kew Gardens,1
+111,KPK,Kings Park,10
+124,LVW,Lakeview,4
+122,LTN,Laurelton,3
+114,LCE,Lawrence,4
+117,LHT,Lindenhurst,9
+120,LNK,Little Neck,3
+119,LMR,Locust Manor,3
+123,LVL,Locust Valley,7
+113,LBH,Long Beach,7
+118,LIC,Long Island City,1
+125,LYN,Lynbrook,4
+142,MVN,Malverne,4
+131,MHT,Manhasset,4
+136,MQA,Massapequa,7
+135,MPK,Massapequa Park,7
+140,MSY,Mastic Shirley,12
+126,MAK,Mattituck,14
+129,MFD,Medford,10
+127,MAV,Merillon Avenue,4
+226,MRK,Merrick,7
+199,SSM,Mets-Willets Point,1
+132,MIN,Mineola,4
+141,MTK,Montauk,14
+130,MHL,Murray Hill,3
+149,NBD,Nassau Boulevard,4
+152,NHP,New Hyde Park,4
+153,NPT,Northport,9
+148,NAV,Nostrand Avenue,1
+157,ODL,Oakdale,10
+155,ODE,Oceanside,7
+154,OBY,Oyster Bay,7
+163,PGE,Patchogue,10
+237,NYK,Penn Station,1
+165,PLN,Pinelawn,9
+162,PDM,Plandome,4
+164,PJN,Port Jefferson,10
+171,PWS,Port Washington,4
+175,QVG,Queens Village,3
+176,RHD,Riverhead,14
+183,RVC,Rockville Centre,7
+179,RON,Ronkonkoma,10
+180,ROS,Rosedale,3
+182,RSN,Roslyn,7
+204,SVL,Sayville,10
+185,SCF,Sea Cliff,7
+187,SFD,Seaford,7
+202,STN,Smithtown,10
+191,SHN,Southampton,14
+190,SHD,Southold,14
+198,SPK,Speonk,12
+184,SAB,St. Albans,3
+193,SJM,St. James,10
+195,SMR,Stewart Manor,4
+14,BK,Stony Brook,10
+205,SYT,Syosset,7
+211,VSM,Valley Stream,4
+215,WGH,Wantagh,7
+216,WHD,West Hempstead,4
+213,WBY,Westbury,7
+233,WHN,Westhampton,14
+219,WWD,Westwood,4
+217,WMR,Woodmere,4
+214,WDD,Woodside,1
+220,WYD,Wyandanch,9
+223,YPK,Yaphank,12

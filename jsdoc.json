@@ -1,0 +1,24 @@
+{
+    "plugins": ["plugins/markdown"],
+    "source": {
+        "include": ["src/"],
+        "exclude": ["node_modules/"],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "templates": {
+        "systemName": "Right Track Agency: LIRR",
+        "systemSummary": "The Right Track Agency implementation for the Long Island Rail Road",
+        "systemColor": "#00897B",
+        "footer": "Source Code for Right Track available at <a href='https://github.com/right-track'>GitHub/right-track</a>",
+        "copyright": "Copyright &copy; 2021 David Waring and Right Track Contributors",
+        "dateFormat": "YYYY-MM-DD",
+        "collapseSymbols": false
+      },
+    "opts": {
+        "readme": "README.md",
+        "template": "./node_modules/foodoc/template",
+        "destination": "doc/",
+        "recurse": true
+    }
+}

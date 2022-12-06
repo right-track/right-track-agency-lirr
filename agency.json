@@ -1,0 +1,100 @@
+{
+  "name": "Long Island Rail Road",
+  "title": "Right Track: LIRR",
+  "id": "lirr",
+  "maintainer": {
+    "name": "David Waring",
+    "email": "dev@davidwaring.net",
+    "website": "https://www.davidwaring.net/",
+    "source": "https://github.com/right-track/right-track-agency-lirr"
+  },
+  "db": {
+    "location": "./static/db/database.db",
+    "archive": {
+      "source": "google_drive",
+      "location": "1UMMesQair-7aRoIgejenJ7QhfI3blWj-"
+    }
+  },
+  "stationFeed": {
+    "host": "api-endpoint.mta.info",
+    "path": "/Dataservice/mtagtfsfeeds/lirr%2Fgtfs-lirr",
+    "apiKey": ""
+  },
+  "static": {
+    "img": {
+      "icon": "./static/img/icon.png",
+      "circle": {
+        "192": "./static/img/icon_circle_192.png",
+        "512": "./static/img/icon_circle_512.png"
+      },
+      "square": {
+        "192": "./static/img/icon_square_192.png",
+        "512": "./static/img/icon_square_512.png",
+        "1024": "./static/img/icon_square_1024.png"
+      }
+    }
+  },
+  "build": {
+    "updateURL": "http://web.mta.info/developers/data/lirr/google_transit.zip"
+  },
+  "colors": {
+    "primary": "#0f47a1",
+    "primaryText": "#dddddd",
+    "secondary": "#ffd54f",
+    "secondaryText": "#263238"
+  },
+  "transit": {
+    "agency": "mta",
+    "division": "lirr",
+    "lines": [
+      {
+        "routeShortName": "Babylon",
+        "lineCode": "babylon"
+      },
+      {
+        "routeShortName": "Port Jefferson",
+        "lineCode": "port-jefferson"
+      },
+      {
+        "routeShortName": "Belmont",
+        "lineCode": "belmont"
+      },
+      {
+        "routeShortName": "City Zone",
+        "lineCode": "city-zone"
+      },
+      {
+        "routeShortName": "Hempstead",
+        "lineCode": "hempstead"
+      },
+      {
+        "routeShortName": "Oyster Bay",
+        "lineCode": "oyster-bay"
+      },
+      {
+        "routeShortName": "Ronkonkoma",
+        "lineCode": "ronkonkoma"
+      },
+      {
+        "routeShortName": "Montauk",
+        "lineCode": "montauk"
+      },
+      {
+        "routeShortName": "Long Beach",
+        "lineCode": "long-beach"
+      },
+      {
+        "routeShortName": "Far Rockaway",
+        "lineCode": "far-rockaway"
+      },
+      {
+        "routeShortName": "West Hempstead",
+        "lineCode": "west-hempstead"
+      },
+      {
+        "routeShortName": "Port Washington",
+        "lineCode": "port-washington"
+      }
+    ]
+  }
+}

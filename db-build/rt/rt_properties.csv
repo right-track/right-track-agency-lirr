@@ -1,0 +1,8 @@
+name,value
+name,Long Island Rail Road
+rt_agency_code,lirr
+rt_transit_agency,mta
+rt_transit_division,lirr
+rt_transit_line,
+db_maintainer,David Waring
+db_maintainer_email,webmaster@righttrack.io

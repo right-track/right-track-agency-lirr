@@ -1,0 +1,4 @@
+/.idea
+/static/db/archive/*.zip
+/db-build/gtfs/*.txt
+/db-build/out
