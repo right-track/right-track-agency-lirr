@@ -294,16 +294,15 @@ function _getTrip(db, departure, departure_trip, callback) {
 
         // Get the Stop
         core.query.stops.getStop(db, stop_info.id, function(err, stop) {
-          if ( stop ) {
+          if ( stop && (stop_info.arrival || stop_info.departure) ) {
             let arrDT = DateTime.createFromJSDate(new Date(stop_info.arrival ? stop_info.arrival : stop_info.departure));
             let depDT = DateTime.createFromJSDate(new Date(stop_info.departure ? stop_info.departure : stop_info.arrival));
 
             // Build the StopTime
             let st = new StopTime(stop, arrDT.getTimeGTFS(), depDT.getTimeGTFS(), stop_info.sequence, {date: departure_trip.date});
             sts.push(st);
-
-            _finish();
           }
+          _finish();
         });
       }
     });
