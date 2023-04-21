@@ -5,3 +5,4 @@
 /yarn.lock
 /db-build/gtfs
 /db-build/out
+/static/db/database.db
