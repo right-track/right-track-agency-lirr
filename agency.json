@@ -35,7 +35,7 @@
     }
   },
   "build": {
-    "updateURL": "http://web.mta.info/developers/data/lirr/google_transit.zip"
+    "updateURL": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip"
   },
   "colors": {
     "primary": "#0f47a1",
