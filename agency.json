@@ -11,8 +11,14 @@
   "db": {
     "location": "./static/db/database.db",
     "archive": {
-      "source": "google_drive",
-      "location": "1UMMesQair-7aRoIgejenJ7QhfI3blWj-"
+      "source": "s3",
+      "location": {
+        "endPoint": "hel1.your-objectstorage.com",
+        "bucket": "mrce",
+        "path": "right-track-db/lirr",
+        "accessKey": "",
+        "secretKey": ""
+      }
     }
   },
   "stationFeed": {
